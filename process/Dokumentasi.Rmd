@@ -1,0 +1,88 @@
+---
+title: "Nutrifood Transporter Routing Optimization Problem"
+subtitle: | 
+    | Dokumentasi Modelling dan Penyelesaian
+    | Menggunakan R
+author: | 
+    | Departemen Market Research
+    | Nutrifood Indonesia
+date: "`r format(Sys.time(), '%d %B %Y')`"
+fontsize: 12pt
+output: 
+  pdf_document:
+    number_sections: true
+    toc: false
+    fig_width: 7
+    fig_height: 4
+    fig_caption: true
+    highlight: tango
+header-includes:
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyfoot[CO,CE]{Nutrifood Transporter Routing Optimization Problem}
+- \fancyfoot[LE,RO]{hal \thepage}  
+- \usepackage{lscape}
+- \newcommand{\blandscape}{\begin{landscape}}
+- \newcommand{\elandscape}{\end{landscape}}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+options(scipen = 999)
+rm(list=ls())
+
+load("~/NTOP/input/data dokumentasi.rda")
+```
+
+\newpage
+\tableofcontents
+\newpage
+\listoftables
+\listoffigures
+\newpage
+
+# PENDAHULUAN
+
+## Latar Belakang
+
+Setiap hari, tim DTA membuat rute untuk _transporter_ mendistribusikan produk jadi ke konsumen-konsumen Nutrifood yang telah melakukan _order_. Proses ini masih dilakukan secara manual. Akibatnya proses ini memakan waktu yang cukup lama dan tidak ada kejaminan bahwa rute yang dipilih sudah optimal atau belum. Oleh karena itu, tim DTA bersama dengan tim _Digital Transformation_ dan _Market Research_ berusaha untuk membuat model optimisasi dari permasalahan ini.
+
+## Tujuan
+
+Membuat model optimisasi rute transporter yang meminimalkan _total cost_ yang dibuat.
+
+## _Business Process_
+
+Untuk mengirimkan produk jadi dari Gudang Ciawi dan Cibitung, tim DTA menyewa _transporter_ dengan berbagai jenis armada kendaraan. Masing-masing kendaraan tersebut memiliki spesifikasi yang berbeda-beda, seperti: kapasitas kubikasi yang bisa diangkut, kapasitas tonase yang bisa diangkut, biaya sewa (per km) yang timbul, dan _loading time_. Masing-masing armada tersebut juga memiliki keterbatasan dari segi jumlah armada yang bisa disewa dan berapa banyak titik konsumen yang bisa dilalui.
+
+Konsumen telah memesan (melalui proses _purchase order_ - PO) sejumlah produk jadi kepada Nutrifood. Pada PO tersebut, disebutkan pula berapa kubik dan tonase produk yang harus dikirim dan _range_ tanggal pengiriman produk. DTA harus memenuhi pembelian tersebut secara langsung (tidak boleh memecah pengiriman produk dalam satu PO menjadi beberapa kali pengiriman). 
+
+Masing-masing konsumen akan dilayani oleh gudang Ciawi atau Cibitung sesuai dengan pembagian yang telah ditetapkan sebelumnya. Tidak ada konsumen yang dilayani oleh keduanya.
+
+Masing-masing konsumen memiliki keterbatas lain terkait armada yang bisa dilalui karena lokasi mereka berbeda-beda. Ada konsumen yang berlokasi di jalan besar sehingga armada ukuran besar bisa melewatinya dengan aman. Namun ada beberapa konsumen yang lokasinya hanya bisa dilalui oleh armada kecil.
+
+\newpage
+\blandscape
+
+# DATA TERKAIT
+
+Data _real_ dari DTA dan gudang sedang disusun oleh tim terkait. Oleh karena itu, saya akan gunakan data _dummy_ berdasarkan informasi pada bagian sebelumnya.
+
+## Data Terkait Armada
+
+```{r,echo=FALSE,message=FALSE}
+df_jenis_armada %>% knitr::kable(caption = "Data Informasi Armada")
+```
+
+\elandscape
+
+Lalala
+
+
+
+
+
+# _MODELLING_
+
