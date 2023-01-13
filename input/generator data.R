@@ -1,4 +1,4 @@
-setwd("~/NTOP/input")
+setwd("/cloud/project/input")
 
 rm(list=ls())
 
@@ -119,7 +119,7 @@ tanggal_kirim    = tanggal_min_max(n_tanggal,n_toko)
 
 df_order = data.frame(nama_toko,
                       order_kubikasi,
-                      order_tonase,
+                      order_tonase = round(order_tonase,1),
                       tanggal_kirim) %>% 
   separate(tanggal_kirim,
            into = c("tanggal_kirim_min","tanggal_kirim_max"),
