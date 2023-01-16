@@ -169,12 +169,6 @@ Pada bagian ini, kita akan coba tulis dan turunkan model matematika untuk masala
     
 Perhatikan bahwa ada 4 buah himpunan yang terlibat. Kelak model optimisasi harus bisa membuat hubungan-hubungan yang mungkin antara semua himpunan tersebut.
 
-```{r,echo = FALSE,message = FALSE,warning = FALSE,fig.retina = 5,fig.cap = "Hubungan Antar Himpunan"}
-nomnoml::nomnoml("#direction: right
-                 
-                 ")
-```
-
 ## Parameter yang Terlibat
 
 Tuliskan:
@@ -194,6 +188,10 @@ Tuliskan:
 
 ## _Decision Variables_
 
+```{r,echo = FALSE,message = FALSE,warning = FALSE,fig.retina = 5,fig.cap = "Hubungan Antar Himpunan"}
+knitr::include_graphics("Blank diagram.png")
+```
+
 Kita akan definisikan beberapa variabel berikut ini:
 
 - $\forall t \in \mathcal{T}, \forall m \in \mathcal{M}$
@@ -203,7 +201,7 @@ $$c_{t,m} = \left\{\begin{matrix}
 0, & \text{lainnya}
 \end{matrix}\right.$$
 
-$$ass_{t,m} = \left\{\begin{matrix}
+$$assigned_{t,m} = \left\{\begin{matrix}
 1, & \text{jika armada } m \text{ dikirim ke toko } t \\
 0, & \text{lainnya}
 \end{matrix}\right.$$
@@ -222,7 +220,16 @@ $$ada_{m,d} = \left\{\begin{matrix}
 0, & \text{lainnya}
 \end{matrix}\right.$$
 
+- $\forall t \in \mathcal{T}, \forall d \in \mathcal{D}$
 
+$$kirim_{t,d} = \left\{\begin{matrix}
+1, & \text{jika pesanan toko } t \text{ dikirim di tanggal } d \\
+0, & \text{lainnya}
+\end{matrix}\right.$$
+
+## _Contraints_
+
+Berikut adalah semua _constraints_ yang terlibat dalam model ini:
 
 
 
