@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2022.12.1)  16 JAN 2023 02:04
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2022.12.1)  16 JAN 2023 02:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -611,21 +611,21 @@ File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) [7
 
 ]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 551.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 574.
 [8
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 551.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 574.
 (./Dokumentasi.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 551.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 551.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 574.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 574.
  ) 
 Here is how much of TeX's memory you used:
- 13526 strings out of 481239
- 196426 string characters out of 5920377
- 495175 words of memory out of 5000000
- 28429 multiletter control sequences out of 15000+600000
- 607642 words of font info for 101 fonts, out of 8000000 for 9000
+ 13540 strings out of 481239
+ 196618 string characters out of 5920377
+ 495302 words of memory out of 5000000
+ 28433 multiletter control sequences out of 15000+600000
+ 607911 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  41i,11n,45p,810b,450s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/en
@@ -641,10 +641,10 @@ e/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/
 lmri12.pfb></usr/share/texmf/fonts/type1/public/lm/lmro12.pfb></usr/share/texmf
 /fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt1
 2.pfb>
-Output written on Dokumentasi.pdf (8 pages, 238773 bytes).
+Output written on Dokumentasi.pdf (8 pages, 240850 bytes).
 PDF statistics:
- 230 PDF objects out of 1000 (max. 8388607)
- 204 compressed objects within 3 object streams
- 66 named destinations out of 1000 (max. 500000)
- 14433 words of extra memory for PDF output out of 17280 (max. 10000000)
+ 243 PDF objects out of 1000 (max. 8388607)
+ 217 compressed objects within 3 object streams
+ 70 named destinations out of 1000 (max. 500000)
+ 14449 words of extra memory for PDF output out of 17280 (max. 10000000)
 
