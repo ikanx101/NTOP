@@ -186,9 +186,11 @@ Tuliskan:
 - $\forall g \in \mathcal{G}, ts1_g$ sebagai total _time slot_ gudang $g$ pada _weekday_.
 - $\forall g \in \mathcal{G}, ts2_g$ sebagai total _time slot_ gudang $g$ pada _weekend_.
 
+\newpage
+
 ## _Decision Variables_
 
-```{r,echo = FALSE,message = FALSE,warning = FALSE,fig.retina = 5,fig.cap = "Hubungan Antar Himpunan"}
+```{r out.height="30%",echo = FALSE,message = FALSE,warning = FALSE,fig.retina = 5,fig.cap = "Hubungan Antar Himpunan",fig.align='center'}
 knitr::include_graphics("Blank diagram.png")
 ```
 
