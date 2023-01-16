@@ -153,5 +153,52 @@ Penjelasan terkait variabel dari tabel di atas:
 
 \newpage
 
-# _MODELLING_
+# _MATHEMATICAL MODEL_
+
+Pada bagian ini, kita akan coba tulis dan turunkan model matematika untuk masalah optimisasi rute _transporter_.
+
+## Parameter dan _Sets_ yang Terlibat
+
+Tuliskan:
+
+- $\mathcal{T} = \{1,2,..,10\}$ sebagai himpunan toko yang memesan produk ke Nutrifood.
+- $ok_{t}, t \in \mathcal{T}$ sebagai _order_ kubikasi toko $t$.
+- $ot_{t}, t \in \mathcal{T}$ sebagai _order_ tonase toko $t$.
+- $\forall t \in \mathcal{T}, tgl1_t$ sebagai tanggal minimal pengiriman produk oleh Nutrifood.
+- $\forall t \in \mathcal{T}, tgl2_t$ sebagai tanggal maksimal pengiriman produk oleh Nutrifood.
+- $\forall t_1,t_2 \in \mathcal{T}, J_{t_1 t_2}$ sebagai jarak antara toko ke $t_1$ dan $t_2$.
+- $\mathcal{M} = \{ 1,2,..,6 \}$ sebagai himpunan jenis armada yang bisa disewa Nutrifood.
+- $\forall m \in \mathcal{M}, maxcap1_m$ sebagai max kapasitas kubikasi yang bisa diangkut armada $m$.
+- $\forall m \in \mathcal{M}, maxcap2_m$ sebagai max kapasitas tonase yang bisa diangkut armada $m$.
+- $\forall m \in \mathcal{M}, cost_m$ sebagai biaya sewa perkilometer armada $m$.
+- $\forall m \in \mathcal{M}, temp_m$ sebagai max banyaknya toko yang bisa diantarkan armada $m$.
+- $\forall m \in \mathcal{M}, lt_m$ sebagai _loading time_ armada $m$.
+- $\mathcal{G} = \{1,2\}$ sebagai himpunan gudang yang men-_supply_ semua toko yang ada.
+- $\forall t \in \mathcal{T}, \forall m \in \mathcal{M}$
+
+$$c_{t,m} = \left\{\begin{matrix}
+1, & \text{jika toko } t \text{ bisa dilalui oleh armada } m \\
+0, & \text{lainnya}
+\end{matrix}\right.$$
+
+- $\forall t \in \mathcal{T}, \forall g \in \mathcal{G}$
+
+$$s_{t,g} = \left\{\begin{matrix}
+1, & \text{jika toko } t \text{ bisa disupply oleh gudang } g \\
+0, & \text{lainnya}
+\end{matrix}\right.$$
+
+- $\forall g \in \mathcal{G}, ts1_g$ sebagai total _time slot_ gudang $g$ pada _weekday_.
+- $\forall g \in \mathcal{G}, ts2_g$ sebagai total _time slot_ gudang $g$ pada _weekend_.
+
+
+
+
+
+
+
+
+
+
+
 
