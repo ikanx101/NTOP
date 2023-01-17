@@ -167,6 +167,8 @@ obj_func = function(list_1,list_2){
   return(output$jarak_total)
 }
 
+# ==============================================================================
+# kita akan buat contraints 
 
 # ==============================================================================
 # sekarang kita akan mulai bagian yang seru
@@ -178,6 +180,7 @@ n_solusi = 10
 solusi_1 = vector("list",n_solusi)
 solusi_2 = vector("list",n_solusi)
 
+# kita generate calon solusi terlebih dahulu
 for(i in 1:n_solusi){
   solusi_1[[i]] = armada_generate(n_toko,n_armada)
   solusi_2[[i]] = tanggal_generate(n_toko,df_order)
@@ -186,6 +189,29 @@ for(i in 1:n_solusi){
 # buat matriks rotasi
 mat_rotasi = buat_rot_mat(2*pi / 100,n_toko)
 
-obj_func(solusi_1[[1]],solusi_2[[1]]) 
+# initial condition
+f_hit = c()
+
+# kita hitung dulu initial function objective
+for (i in 1:n_solusi){
+  temp = obj_func(solusi_1[[i]],solusi_2[[i]])
+  f_hit[i] = temp
+}
+
+f_hit
+
+n_bhole = which.min(f_hit)
+
+bhole = star[[n_bhole]]
+
+
+
+
+
+
+
+
+
+
 
 

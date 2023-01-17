@@ -316,7 +316,7 @@ Kelak calon solusi yang diharapkan memiliki format sebagai berikut:
 
 ```{r,message=FALSE,warning=FALSE,echo=FALSE}
 df_order %>%
-  mutate(armada_kirim  = sample(5,20,replace = T)) %>% 
+  mutate(armada_kirim  = sample(5,nrow(df_order),replace = T)) %>% 
   rowwise() %>% 
   mutate(tanggal_kirim = sample(tanggal_kirim_min:tanggal_kirim_max,1)) %>% 
   ungroup() %>% 
@@ -412,6 +412,27 @@ Berikut adalah beberapa _constraints_ pada permasalahan ini:
 
 ## Objective Function
 
+```{r,message=FALSE,warning=FALSE}
+# kita akan buat function untuk objective function
+obj_func = function(list_1,list_2){
+  # kita buat dulu ke data frame awalnya
+  df_toko$armada_assign <<- list_1
+  df_toko$tanggal_kirim <<- list_2
+  # kita hitung dulu
+  pecah   = df_toko %>% group_split(armada_assign)
+  n_pecah = length(pecah)
+  jarak = rep(0,n_pecah)
+  for(i in 1:n_pecah){
+    temp      = pecah[[i]]
+    jarak_hit = tsp_hitung(temp)
+    jarak[i]  = jarak_hit
+  }
+  output = 
+    list(jarak_detail = jarak,
+         jarak_total  = sum(jarak))
+  return(output$jarak_total)
+}
+```
 
 
 
