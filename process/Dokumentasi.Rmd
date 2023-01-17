@@ -406,6 +406,22 @@ tsp_hitung = function(new){
 ```
 
 
+## _Constraints_
+
+Berikut adalah beberapa _constraints_ pada permasalahan ini:
+
+## Objective Function
+
+
+
+
+
+
+
+
+
+
+
 
 
 

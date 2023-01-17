@@ -142,19 +142,50 @@ tsp_hitung = function(new){
   hasil = solve_TSP(problem)
   level = row.names(new)
   panjang_rute = tour_length(hasil)
-  detail_rute  = paste(level[as.integer(hasil_1)],collapse = " - ")
+  detail_rute  = paste(level[as.integer(hasil)],collapse = " - ")
   return(panjang_rute)
 }
 
 # ==============================================================================
-# sekarang kita akan mulai
+# kita akan buat function untuk objective function
+obj_func = function(list_1,list_2){
+  # kita buat dulu ke data frame awalnya
+  df_toko$armada_assign <<- list_1
+  df_toko$tanggal_kirim <<- list_2
+  # kita hitung dulu
+  pecah   = df_toko %>% group_split(armada_assign)
+  n_pecah = length(pecah)
+  jarak = rep(0,n_pecah)
+  for(i in 1:n_pecah){
+    temp      = pecah[[i]]
+    jarak_hit = tsp_hitung(temp)
+    jarak[i]  = jarak_hit
+  }
+  output = 
+    list(jarak_detail = jarak,
+         jarak_total  = sum(jarak))
+  return(output$jarak_total)
+}
+
+
+# ==============================================================================
+# sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
+n_solusi = 10
 
-mat_rotasi = buat_rot_mat(2*pi / 60,n_toko)
+# kita buat dulu rumahnya
+solusi_1 = vector("list",n_solusi)
+solusi_2 = vector("list",n_solusi)
+
+for(i in 1:n_solusi){
+  solusi_1[[i]] = armada_generate(n_toko,n_armada)
+  solusi_2[[i]] = tanggal_generate(n_toko,df_order)
+}
+
+# buat matriks rotasi
+mat_rotasi = buat_rot_mat(2*pi / 100,n_toko)
+
+obj_func(solusi_1[[1]],solusi_2[[1]]) 
 
 
-
-calon_solusi_1 = armada_generate(n_toko,n_armada)
-
-calon_solusi_2 = tanggal_generate(n_toko,df_order)

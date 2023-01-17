@@ -40,7 +40,7 @@ for(i in 1:nrow(df_jenis_armada)){
 
 
 # data terkait alamat tujuan
-n_toko = 20
+n_toko = 50
 nama_toko  = randomNames::randomNames(n_toko,which.names = "first") %>% tolower()
 nama_toko  = paste("toko",nama_toko)
 long       = runif(n_toko)
