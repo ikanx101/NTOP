@@ -1,5 +1,5 @@
 ---
-title: "Nutrifood Transporter Routing Optimization Problem"
+title: "Nutrifood Transporter Routing Optimization Problem Menggunakan Spiral Dynamic Optimization Algorithm"
 subtitle: | 
     | Dokumentasi Modelling dan Penyelesaian
     | Menggunakan R
@@ -77,6 +77,80 @@ Nutrifood harus memenuhi pembelian tersebut secara langsung (tidak boleh memecah
 
 Masing-masing konsumen memiliki keterbatas lain terkait armada yang bisa dilalui karena lokasi mereka berbeda-beda. Ada konsumen yang berlokasi di jalan besar sehingga armada ukuran besar bisa melewatinya dengan aman. Namun ada beberapa konsumen yang lokasinya hanya bisa dilalui oleh armada kecil.
 
+## Metode Penyelesaian Model Optimisasi
+
+Untuk menyelesaikan model optimisasi ini, saya akan menggunakan pendekatan _meta heuristic_ dibandingkan penyelesaian secara _exact_. Berikut alasannya:
+
+1. Kita tidak perlu menuliskan model matematika yang kompleks karena permasalahan yang kita hadapi ini memiliki indeks yang tinggi. Cukup menuliskan algoritma berdasarkan definisi dan _constraints_ secara logis.
+1. Penyelesaian dengan metode _exact_ memang menjamin keoptimalan solusi namun tidak semua model bisa dicari solusinya. Sedangkan penyelesaian dengan metode _meta heuristic_, tidak menjamin solusi yang didapatkan adalah solusi yang paling optimal. Namun kita bisa menjadikan solusi tersebut _near optimal_ dengan melakukan _tweaking_ pada algoritma.
+
+Pendekatan _meta heuristic_ yang akan saya gunakan adalah _Spiral Dynamic Optimization Algorithm_.
+
+# _SPIRAL DYNAMIC OPTIMIZATION ALGORITHM_
+
+## Penjelasan Singkat
+
+_Spiral Optimization Algorithm_ adalah salah satu metode _meta heuristic_ yang digunakan untuk mencari minimum global dari suatu sistem persamaan. 
+
+Algoritmanya mudah dipahami dan intuitif tanpa harus memiliki latar keilmuan tertentu. Proses kerjanya adalah dengan melakukan _random number generating_ pada suatu selang dan melakukan rotasi sekaligus kontraksi dengan titik paling minimum pada setiap iterasi sebagai pusatnya.
+
+Berikut adalah algoritmanya:
+
+```
+INPUT
+  m >= 2 # jumlah titik
+  theta  # sudut rotasi (0 <= theta <= 2pi)
+  r      # konstraksi
+  k_max  # iterasi maksimum
+PROCESS
+  1 generate m buah titik secara acak
+      x_i
+  2 initial condition
+      k = 0 # untuk keperluan iterasi
+  3 cari x_* yang memenuhi
+      min(f(x_*))
+  
+  4 lakukan rotasi dan konstraksi semua x_i
+      x_* sebagai pusat rotasi
+      k = k + 1
+  5 ulangi proses 3 dan 4
+  6 hentikan proses saat k = k_max
+      output x_*
+```
+
+Berdasarkan algoritma di atas, salah satu proses yang penting adalah melakukan __rotasi__ dan __konstraksi__ terhadap semua titik yang telah di-_generate_.
+
+## Menyelesaikan Masalah Optimisasi dengan SDOA
+
+Misal suatu permasalahan MILP atau MINLP bisa ditulis secara umum sebagai berikut:
+
+$$\min_{x \in \mathbb{R}^n} f(x)$$
+
+$$\text{subject to: } g_i(x) = 0, i = 1,2,..,M$$
+
+$$\text{and } h_j(x) \leq 0,i = 1,2,..,N$$
+
+$$x = (x_1,x_2,...,x_n)^T \in \mathbb{N}$$
+
+Bentuk di atas bisa kita ubah menjadi:
+
+$$F(x,\alpha,\beta) = f(x) + \sum_{i=1}^M \alpha_i g_i^2(x) + \sum_{j = 1}^N \beta_j (\max{(h_i(x),0)})^2$$
+
+dimana $\alpha,\beta$ merupakan _penalty constant_ yang bisa dibuat sangat besar.
+
+## Matriks Rotasi untuk n-Dimensi
+
+SOA relatif mudah untuk dituliskan dalam bentuk algoritma bahasa pemrograman manapun. Tapi ada satu hal yang bisa menjadi batu ganjalan dalam menuliskan algoritmanya. Apa itu? Yaitu pendefinisian matriks rotasi untuk masalah dengan n-dimensi.
+
+Bentuk umum dari matriks rotasi adalah sebagai berikut:
+
+$$R^{(n)} (\theta_{1,2},\theta_{1,3},..,\theta_{n,n-1}) = \prod_{i=1}^{n-1} \left ( \prod_{j=1}^i R^{(n)}_{n-i,n+1-j} (\theta_{n-i,n+1-j}) \right )$$
+
+Perhatikan bahwa perkalian matriks rotasi yang dilakukan adalah _cross product_.
+
+Alasan: Rotasi tidak mengubah _norm_ suatu vektor.
+
+
 # DATA TERKAIT
 
 Data _real_ dari DTA dan gudang sedang disusun oleh tim terkait. Oleh karena itu, saya akan gunakan data _dummy_ berdasarkan informasi pada bagian sebelumnya.
@@ -133,7 +207,6 @@ Kedua data total waktu kerja ini berdasarkn jam kerja pada dua _shift_.
 df_jenis_armada %>% knitr::kable(caption = "Data Informasi Armada")
 ```
 
-
 Penjelasan terkait variabel dari tabel di atas:
 
 1. `armada`, yakni jenis armada yang bisa disewa Nutrifood.
@@ -156,7 +229,7 @@ Penjelasan terkait variabel dari tabel di atas:
 
 # _MATHEMATICAL MODEL_
 
-Pada bagian ini, kita akan coba tulis dan turunkan model matematika untuk masalah optimisasi rute _transporter_.
+Menuliskan model matematika dari permasalahan kompleks di atas menjadi tantangan tersendiri karena variabel yang terlibat akan memiliki indeks yang tinggi, setidaknya ada 4 indeks yang berasal dari 4 himpunan yang terlibat:
 
 ## _Index_ dan Himpunan yang Terlibat
 
@@ -167,9 +240,8 @@ Pada bagian ini, kita akan coba tulis dan turunkan model matematika untuk masala
     - $\mathcal{\hat{D}}$ sebagai hari _weekday_.
     - $\mathcal{\dot{D}}$ sebagai hari _weekend_.
     
-Perhatikan bahwa ada 4 buah himpunan yang terlibat. Kelak model optimisasi harus bisa membuat hubungan-hubungan yang mungkin antara semua himpunan tersebut.
 
-## Parameter yang Terlibat
+## Parameter dari Data
 
 Tuliskan:
 
