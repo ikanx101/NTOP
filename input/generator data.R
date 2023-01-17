@@ -40,7 +40,7 @@ for(i in 1:nrow(df_jenis_armada)){
 
 
 # data terkait alamat tujuan
-n_toko = 10
+n_toko = 20
 nama_toko  = randomNames::randomNames(n_toko,which.names = "first") %>% tolower()
 nama_toko  = paste("toko",nama_toko)
 long       = runif(n_toko)
@@ -104,7 +104,7 @@ mat_toko_supply = data.matrix(mat_toko_supply)
 nama_toko
 order_kubikasi = sample(4:30,n_toko,replace = T)
 order_tonase   = order_kubikasi * (1 + runif(1)/2)
-n_tanggal      = 15   # range tanggal yang mungkin terjadi 
+n_tanggal      = 7   # range tanggal yang mungkin terjadi 
 
 # kita akan buat function untuk generate tanggal min max yang akan muncul
 tanggal_min_max = function(n_tanggal,n_toko){
@@ -207,5 +207,9 @@ save(df_jenis_armada,df_toko,df_order,df_gudang,file = "data dokumentasi.rda")
 
 # ==============================================================================
 # sementara ini kita save dalam bentuk rda untuk kebutuhan modellingnya
-save(df_jenis_armada,mat_armada_tersedia,dist_mat,mat_toko_armada,mat_toko_supply,df_order_murni,mat_order_tanggal,df_gudang,
+save(df_jenis_armada,mat_armada_tersedia,dist_mat,mat_toko_armada,
+     mat_toko_supply,df_order_murni,mat_order_tanggal,df_gudang,
      file = "modelling data.rda")
+
+# DONE
+
