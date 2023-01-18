@@ -406,11 +406,10 @@ tsp_hitung = function(new){
 ```
 
 
-## _Constraints_
+## _Objective Function_ dan _Constraints_
 
-Berikut adalah beberapa _constraints_ pada permasalahan ini:
+Berikut adalah _objective function_ dan beberapa _constraints_ yang dituliskan dalam satu _function_:
 
-## Objective Function
 
 ```{r,message=FALSE,warning=FALSE}
 # kita akan buat function untuk objective function

@@ -32,7 +32,7 @@ for(i in 1:n_temp){
 df_jenis_armada = 
   df_hasil %>% 
   arrange(armada) %>% 
-  mutate(armada = 1:nrow(df_hasil)) %>% 
+  mutate(id_armada = 1:nrow(df_hasil)) %>% 
   select(-tersedia)
 
 # lalu kita akan ambil data mana yang harus dikerjakan terlebih dahulu
@@ -41,9 +41,9 @@ df_jenis_armada =
 target_gudang = "ciawi"
 
 # kita filtering terlebih dahulu
-df_toko  = df_toko %>% filter(supplied == target_gudang)
-df_order = df_order %>% filter(nama_toko %in% df_toko$nama_toko)
-
+df_toko   = df_toko %>% filter(supplied == target_gudang)
+df_order  = df_order %>% filter(nama_toko %in% df_toko$nama_toko)
+df_gudang = df_gudang %>% filter(site == target_gudang) %>% .$week_day_hour
 
 
 
@@ -146,35 +146,104 @@ tsp_hitung = function(new){
   return(panjang_rute)
 }
 
+
 # ==============================================================================
 # kita akan buat function untuk objective function
 obj_func = function(list_1,list_2){
-  # kita buat dulu ke data frame awalnya
-  df_toko$armada_assign <<- list_1
-  df_toko$tanggal_kirim <<- list_2
-  # kita hitung dulu
-  pecah   = df_toko %>% group_split(armada_assign)
-  n_pecah = length(pecah)
-  jarak = rep(0,n_pecah)
+  # kita buat dulu ke data frame untuk mengecek semua informasi yang ada
+  df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
+  df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
+  df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
+  df_temp_3$id_armada     = round(as.vector(list_1),0) # masalahnya di rounding ini ya
+  df_temp_3$tanggal_kirim = round(as.vector(list_2),0)
+  df_temp_3 = merge(df_temp_3,df_jenis_armada)
+  
+  # konstanta penalti
+  alfa = 10^3
+  beta = 10^3
+  
+  # kita pecah dulu berdasarkan armada dan tanggal
+  pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim)
+  n_pecah    = length(pecah)
+  
+  # kita hitung dulu cost per jarak
+  jarak_cost = rep(0,n_pecah)
   for(i in 1:n_pecah){
-    temp      = pecah[[i]]
-    jarak_hit = tsp_hitung(temp)
-    jarak[i]  = jarak_hit
+    temp           = pecah[[i]]
+    jarak_hit      = tsp_hitung(temp)
+    jarak_cost[i]  = jarak_hit * temp$cost_per_km[1]
   }
-  output = 
-    list(jarak_detail = jarak,
-         jarak_total  = sum(jarak))
-  return(output$jarak_total)
+  jarak_total  = sum(jarak_cost)   # ini yang pertama disave
+  
+  # constraint 1
+  # tidak ada armada yang kelebihan muatan dalam kubikasi
+  constraint_1 = rep(0,n_pecah)
+  # constraint 2
+  # tidak ada armada yang kelebihan muatan dalam tonase
+  constraint_2 = rep(0,n_pecah)
+  # constraint 3
+  # armada yang mengantar tidak boleh melebihi max armada yang memungkinkan
+  constraint_3 = rep(0,n_pecah)
+  # constraint 4
+  # rute yang dilalui tidak melebihi max rute
+  constraint_4 = rep(0,n_pecah)
+  
+  # proses menghitung semua constraint
+  for(i in 1:n_pecah){
+    temp_1 = pecah[[i]]
+    # constraint 1
+    c_1              = sum(temp_1$order_kubikasi) - mean(temp_1$max_cap_kubikasi)
+    c_1              = max(c_1,0)
+    constraint_1[i]  = beta * c_1^2
+    
+    # constraint 2
+    c_2              = sum(temp_1$order_tonase) - mean(temp_1$max_cap_tonase)
+    c_2              = max(c_2,0)
+    constraint_2[i]  = beta * c_2^2
+    
+    # constraint 3
+    c_3              = mean(temp_1$armada) - mean(temp_1$max_armada)
+    c_3              = max(c_3,0)
+    constraint_3[i]  = beta * c_3^2
+    
+    # constraint 4
+    c_4              = nrow(temp_1) - mean(temp_1$max_titik)
+    c_4              = max(c_4,0)
+    constraint_4[i]  = beta * c_4^2
+    
+  }
+  
+  # ada beberapa constraint yang hanya bisa dilihat per tanggal kirim
+  pecah      = df_temp_3 %>% group_split(tanggal_kirim)
+  n_pecah    = length(pecah)
+  
+  # constraint 5
+  # total waktu loading
+  constraint_5 = rep(0,n_pecah)
+
+  # proses menghitung semua constraint
+  for(i in 1:n_pecah){
+    temp_1 = pecah[[i]]
+    # constraint 5
+    c_1              = sum(temp_1$loading_time) - df_gudang
+    c_1              = max(c_1,0)
+    constraint_5[i]  = beta * c_1^2
+  }
+  
+  output = jarak_total + sum(constraint_1) + sum(constraint_2) + 
+           sum(constraint_3) + sum(constraint_4) + sum(constraint_5)
 }
 
-# ==============================================================================
-# kita akan buat contraints 
+
+
+
 
 # ==============================================================================
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
 n_solusi = 10
+n_sdoa   = 3
 
 # kita buat dulu rumahnya
 solusi_1 = vector("list",n_solusi)
@@ -198,11 +267,41 @@ for (i in 1:n_solusi){
   f_hit[i] = temp
 }
 
+
 f_hit
 
-n_bhole = which.min(f_hit)
+# kita mulai perhitungannya di sini
+for(iter in 1:n_sdoa){
+  # kita cari dulu mana yang akan jadi pusat
+  n_bhole = which.min(f_hit)
+  
+  # kita jadikan center of gravity
+  center_1 = solusi_1[[n_bhole]]
+  center_2 = solusi_2[[n_bhole]]
+  
+  for(i in 1:n_solusi){
+    Xt_1 = solusi_1[[i]]
+    Xt_2 = solusi_2[[i]]
+    # kita rotasikan dan konstraksikan
+    X1 = mat_rotasi %*% (Xt_1 - center_1)
+    X1 = center_1 + (.7 * X1)
+    # kita rotasikan dan konstraksikan
+    X2 = mat_rotasi %*% (Xt_2 - center_2)
+    X2 = center_2 + (.7 * X2)
+    # save balik ke sini
+    solusi_1[[i]] = X1
+    solusi_2[[i]] = X2
+    # kita hitung kembali
+    list_1 = solusi_1[[i]]
+    list_2 = solusi_2[[i]]
+    temp = obj_func(list_1,list_2)
+    f_hit[i] = temp
+  }
+  
+  print(min(f_hit))
+}
 
-bhole = star[[n_bhole]]
+
 
 
 

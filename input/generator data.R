@@ -15,7 +15,7 @@ max_cap_kubikasi = sample(10:90,n_armada,replace = F) %>% sort()  # berapa kubik
 max_cap_tonase   = max_cap_kubikasi * (1 + runif(n_armada))       # berapa kg yang bisa diangkut
 cost_per_km      = (runif(n_armada) * 50) %>% sort()              # biaya antar per km
 max_route        = # max berapa tempat yang bisa dikunjungi
-tersedia         = sample(5:10,n_armada,replace = T) # tersedia berapa armada?
+tersedia         = sample(2:4,n_armada,replace = T) # tersedia berapa armada?
 max_titik        = sample(2:10,n_armada,replace = T) %>% sort()
 loading_time     = runif(n_armada) %>% sort()  # loading time dalam menit
 df_jenis_armada  = data.frame(armada   = 1:n_armada,
@@ -41,7 +41,7 @@ for(i in 1:nrow(df_jenis_armada)){
 
 # data terkait alamat tujuan
 n_toko = 50
-nama_toko  = randomNames::randomNames(n_toko,which.names = "first") %>% tolower()
+nama_toko  = randomNames::randomNames(n_toko) %>% tolower()
 nama_toko  = paste("toko",nama_toko)
 long       = runif(n_toko)
 lat        = runif(n_toko)
