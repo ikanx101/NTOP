@@ -1,6 +1,7 @@
 ---
 title: "Penyelesaian Nutrifood Transporter Routing Optimization Problem Menggunakan Spiral Dynamic Optimization Algorithm"
 subtitle: | 
+    | CASE STUDIES
     | Dokumentasi Modelling dan Penyelesaian
     | Menggunakan R
 author: | 
@@ -33,7 +34,7 @@ library(ggplot2)
 options(scipen = 999)
 rm(list=ls())
 
-load("/cloud/project/input/data dokumentasi.rda")
+load("~/NTOP/input/data dokumentasi.rda")
 ```
 
 \newpage
@@ -51,7 +52,7 @@ Setiap hari, tim DTA membuat rute untuk _transporter_ mendistribusikan produk ja
 
 ## Tujuan
 
-Membuat model optimisasi rute _transporter_ yang meminimalkan _total cost_ yang dibuat.
+Membuat model optimisasi rute _transporter_ yang meminimalkan _total cost_.
 
 ## Ruang Lingkup
 
@@ -134,11 +135,12 @@ $$\text{and } h_j(x) \leq 0,i = 1,2,..,N$$
 
 $$x = (x_1,x_2,...,x_n)^T \in \mathbb{N}$$
 
-Agar bsa diselesaikan dengan SDOA, kita akan mengubah bentuk di atas menjadi:
+Agar bisa diselesaikan dengan SDOA, kita akan mengubah bentuk di atas menjadi:
 
-$$F(x,\alpha,\beta) = f(x) + \sum_{i=1}^M \alpha_i g_i^2(x) + \sum_{j = 1}^N \beta_j (\max{(h_i(x),0)})^2$$
+$$F(x,\alpha,\beta) = f(x) + \sum_{i=1}^M \alpha_i g_i^2(x) + \sum_{j = 1}^N \beta_j (\max{(h_j(x),0)})^2$$
 
 dimana $\alpha,\beta$ merupakan _penalty constant_ yang bisa dibuat sangat besar. Model komputasi ini dikenal juga dengan sebutan _reinforce learning_.
+
 
 ## Matriks Rotasi untuk n-Dimensi
 
@@ -172,6 +174,21 @@ Penjelasan terkait variabel dari tabel di atas:
 1. `tanggal_kirim_min`, yakni tanggal berapa produk sudah bisa dikirim.
 1. `tanggal_kirim_max`, yakni tanggal berapa produk paling lambat harus dikirim.
 
+```{r, echo=FALSE,message=FALSE,warning=FALSE,fig.cap="Jadwal Pengiriman yang Diperbolehkan",fig.height=3}
+df_order %>% 
+  reshape2::melt(measure.vars = c("tanggal_kirim_min","tanggal_kirim_max")) %>% 
+  ggplot(aes(x = value, 
+             y = nama_toko)) + 
+  geom_line(aes(group = nama_toko),
+            color = "steelblue",
+            size = 3) +
+  labs(x = "Tanggal",
+       y = "Nama Toko",
+       title = "Jadwal Pengiriman Produk yang Diperbolehkan")
+```
+
+\newpage
+
 ## Data Terkait Informasi Detail Toko
 
 ```{r,echo=FALSE,message=FALSE}
@@ -186,6 +203,29 @@ Penjelasan terkait variabel dari tabel di atas:
 1. `max_armada`, yakni jenis armada terbesar yang bisa masuk ke toko. Misalkan, jika `max_armada = 2`, artinya toko tersebut bisa dilalui armada jenis `1` dan `2`.
 1. `supplied`, yakni gudang yang men-_supply_ toko tersebut.
 
+
+```{r, echo=FALSE,message=FALSE,warning=FALSE,fig.cap="Peta Lokasi Toko",fig.height=3.5}
+df_toko %>% 
+  ggplot(aes(x = long,
+             y = lat,
+             color = supplied)) +
+  geom_point() +
+  theme_void() +
+  ggrepel::geom_label_repel(aes(label = nama_toko)) +
+  annotate("point",x = 0,y = 0) +
+  annotate("label",x = 0.05,y = 0.05,label = "GUDANG") +
+  scale_color_manual(values = c("darkgreen","darkblue")) +
+  ylim(-.1,1) +
+  xlim(-.1,1) +
+  labs(title = "Peta Lokasi Toko",
+       color = "Disupply oleh Gudang") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(hjust = .5))
+
+  
+```
+
+
 ## Data Terkait Gudang
 
 ```{r,echo=FALSE,message=FALSE}
@@ -199,16 +239,9 @@ Penjelasan terkait variabel pada tabel di atas:
 1. `week_day_hour`, total waktu kerja yang tersedia pada hari kerja untuk melakukan _loading_ produk dari gudang ke armada. Satuan dari data ini adalah dalam jam.
 1. `week_end_hour`, total waktu kerja yang tersedia pada hari libur untuk melakukan _loading_ produk dari gudang ke armada. Satuan dari data ini adalah dalam jam.
 
-Kedua data total waktu kerja ini berdasarkn jam kerja pada dua _shift_.
-
-\newpage
-\blandscape
+Kedua data total waktu kerja ini berdasarkan jam kerja pada dua _shift_.
 
 ## Data Terkait Armada
-
-```{r,echo=FALSE,message=FALSE}
-df_jenis_armada %>% knitr::kable(caption = "Data Informasi Armada")
-```
 
 Penjelasan terkait variabel dari tabel di atas:
 
@@ -225,6 +258,13 @@ Penjelasan terkait variabel dari tabel di atas:
     - Untuk keperluan komputasi, ketersediaan ini tidak saya jadikan parameter pada model, tapi digunakan untuk mereplikasi baris data pada tabel di atas.
 1. `max_titik`, yakni berapa banyak maksimal konsumen yang pesanannya bisa diantar.
 1. `loading_time`, yakni berapa lama proses _loading_ yang dibutuhkan untuk masing-masing armmada di gudang Ciawi atau Cibitung. Satuan dari data ini adalah jam.
+
+\newpage
+\blandscape
+
+```{r,echo=FALSE,message=FALSE}
+df_jenis_armada %>% knitr::kable(caption = "Data Informasi Armada")
+```
 
 \elandscape
 
@@ -263,6 +303,8 @@ Tuliskan:
 
 Oleh karena menuliskan model matematikanya rumit, maka informasi _sets_ dan parameter yang ada di atas akan kita jadikan modal untuk menuliskan _computational model_-nya.
 
+\newpage
+
 # _COMPUTATIONAL MODEL_
 
 Model komputasi yang digunakan saya akan lampirkan pada dokumen ini.
@@ -275,6 +317,18 @@ Beberapa asumsi yang digunakan:
 1. Total _loading time_ gudang baru berisi satu nilai saja (belum ada pembagian _weekend_ dan _weekday_).
 1. Banyaknya ketersediaan armada berbeda-beda dan nilainya terbatas.
 1. Model ini hanya meng-_cover_ waktu pengiriman selama 7 hari.
+1. Titik lokasi gudang dibuat dengan $long = 0$ dan $lat = 0$.
+
+### Parameter SDOA {.unlisted .unnumbered}
+
+Beberapa parameter SDOA yang digunakan:
+
+1. $\theta = \frac{2 \pi}{30}$,
+1. Koefisien kontraksi = $.7$,
+1. Banyak iterasi = $50$,
+1. Banyak calon solusi yang di-_generate_ = $3000$.
+
+Model akan mencari solusi optimal dengan laju rotasi yang relatif cepat.
 
 ## _Constraints_
 
@@ -285,14 +339,494 @@ Beberapa _constraints_ yang ada pada model:
 1. Banyaknya toko yang ada pada rute tidak melebihi aturan maksimum toko per armada.
 1. Waktu _loading_ gudang perhari tidak boleh dilanggar.
 
+Perhatikan bahwa semua bentuk _constraints_ di atas adalah sebagai berikut:
+
+$$\text{and } h_j(x) \leq 0,i = 1,2,..,N$$
+
 ## _Objective Function_
 
 Fungsi objektif pada model ini adalah:
 
 > Meminimumkan total biaya yang timbul dari setiap keputusan toko $i$ dikirim armada $j$ pada tanggal $k$ tanpa melanggar _constraints_ yang ada.
 
+## Catatan Terkait _Libraries_ yang Digunakan
+
+Tidak ada _libraries_ khusus yang digunakan. Semua algoritma ditulis menggunakan prinsip _tidyverse_. 
+
+## Catatan Terkait Proses Komputasi 
+
+Namun untuk mempercepat komputasi, saya menggunakan prinsip _parallel computing_ dengan banyaknya _cores_ yang digunakan adalah $5$. 
+
+Total _runtime_ pada contoh kasus ini adalah sekitar 10 menit.
+
+Oleh karena itu, algoritma ini hanya bisa di-_run_ dengan komputer bersistem operasi Linux / UNIX. _Windows_ secara _default_ tidak _support_ proses _parallel computing_.
 
 
+\newpage
+
+```{r,include=FALSE}
+rm(list=ls())
+
+load("~/NTOP/output/ciawi done.rda")
+
+list_jadwal = 
+  df_temp_3 %>% 
+  select(-long,-lat,-cost_per_km) %>% 
+  group_split(tanggal_kirim)
+
+printing = function(temp){
+  tanggal    = paste0("Pengiriman tanggal: ",temp$tanggal_kirim[1])
+  temp = 
+    temp %>% 
+    select(nama_toko,id_armada,armada,order_kubikasi,order_tonase) %>% 
+    arrange(id_armada) %>% 
+    rename(jenis_armada = armada,
+           armada_ke = id_armada)
+    
+  armada_ke = temp$armada_ke %>% unique()
+  id_new    = 1:length(armada_ke)
+  df_refer  = data.frame(armada_ke,id_new)
+  
+  merge(temp,df_refer) %>% 
+    select(-armada_ke) %>% 
+    rename(armada_ke = id_new) %>% 
+    relocate(armada_ke,.before = jenis_armada) %>% 
+    knitr::kable(caption = tanggal)
+}
+```
+
+# SOLUSI MODEL
+
+## Pengiriman dari Gudang Ciawi
+
+Berikut adalah solusi model untuk toko yang di-_supply_ oleh gudang Ciawi:
+
+```{r,echo=FALSE}
+i = 1
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 2
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 3
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 4
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 5
+temp = list_jadwal[[i]]
+printing(temp)
+```
+
+
+## Pengiriman dari Gudang Cibitung
+
+Berikut adalah solusi model untuk toko yang di-_supply_ oleh gudang Cibitung:
+
+```{r,include=FALSE}
+rm(list=ls())
+
+load("~/NTOP/output/cibitung done.rda")
+
+list_jadwal = 
+  df_temp_3 %>% 
+  select(-long,-lat,-cost_per_km) %>% 
+  group_split(tanggal_kirim)
+
+printing = function(temp){
+  tanggal    = paste0("Pengiriman tanggal: ",temp$tanggal_kirim[1])
+  temp = 
+    temp %>% 
+    select(nama_toko,id_armada,armada,order_kubikasi,order_tonase) %>% 
+    arrange(id_armada) %>% 
+    rename(jenis_armada = armada,
+           armada_ke = id_armada)
+    
+  armada_ke = temp$armada_ke %>% unique()
+  id_new    = 1:length(armada_ke)
+  df_refer  = data.frame(armada_ke,id_new)
+  
+  merge(temp,df_refer) %>% 
+    select(-armada_ke) %>% 
+    rename(armada_ke = id_new) %>% 
+    relocate(armada_ke,.before = jenis_armada) %>% 
+    knitr::kable(caption = tanggal)
+}
+```
+
+
+```{r,echo=FALSE}
+i = 1
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 2
+temp = list_jadwal[[i]]
+printing(temp)
+```
+
+
+\newpage
+
+# LAMPIRAN
+
+## _Computational Model_ {.unnumbered}
+
+Berikut adalah algoritma yang dibuat:
+
+```
+# membersihkan global environment
+rm(list=ls())
+setwd("~/NTOP/output")
+
+# ==============================================================================
+# libraries yang diperlukan
+library(dplyr)
+library(tidyr)
+library(TSP)
+
+# ==============================================================================
+# load data
+load("~/NTOP/input/data dokumentasi.rda")
+
+# ==============================================================================
+# kita akan modifikasi si database jenis armada
+# yakni dengan mereplikasi baris-baris tergantung dari ketersediaan armada
+temp = 
+  df_jenis_armada %>% 
+  group_split(armada)
+
+n_temp = length(temp)
+df_hasil = data.frame()
+
+for(i in 1:n_temp){
+  df_temp = temp[[i]]
+  for(k in 1:df_temp$tersedia){
+    df_hasil = rbind(df_temp,df_hasil)
+  }
+}
+
+# kita kembalikan lagi ke data awal
+df_jenis_armada = 
+  df_hasil %>% 
+  arrange(armada) %>% 
+  mutate(id_armada = 1:nrow(df_hasil)) %>% 
+  select(-tersedia)
+
+# lalu kita akan ambil data mana yang harus dikerjakan terlebih dahulu
+# apakah mau Ciawi atau Cibitung terlebih dahulu?
+# misalkan target gudang terlebih dahulu
+target_gudang = "cibitung"
+
+# kita filtering terlebih dahulu
+df_toko   = df_toko %>% filter(supplied == target_gudang)
+df_order  = df_order %>% filter(nama_toko %in% df_toko$nama_toko)
+df_gudang = df_gudang %>% filter(site == target_gudang) %>% .$week_day_hour
+
+
+# ==============================================================================
+# membuat function rotation matrix
+buat_rot_mat = function(theta,n){
+  # buat template sebuah matriks identitas
+  temp_mat = matrix(0,ncol = n,nrow = n)
+  diag(temp_mat) = 1
+  
+  # buat matriks identitas terlebih dahulu
+  mat_rot = temp_mat
+  # membuat isi matriks rotasi
+  for(i in 1:(n-1)){
+    for(j in 1:i){
+      temp = temp_mat
+      idx = n-i
+      idy = n+1-j
+      # print(paste0("Matriks rotasi untuk ",idx," - ",idy,": DONE"))
+      temp[idx,idx] = cos(theta)
+      temp[idx,idy] = -sin(theta)
+      temp[idy,idx] = sin(theta)
+      temp[idy,idy] = cos(theta)
+      # assign(paste0("M",idx,idy),temp)
+      mat_rot = mat_rot %*% temp
+      mat_rot = mat_rot 
+    }
+  }
+  # output matriks rotasi
+  return(mat_rot)
+}
+
+
+# ==============================================================================
+# berikutnya kita akan buat function generator
+# jangan lupa bahwa nanti ada yang harus difilter terlebih dahulu
+
+# generate solusi untuk armada
+armada_generate = function(n_toko,n_armada){
+  sample(n_armada,n_toko,replace = T)
+}
+
+# generate tanggal kirim sesuai dengan data yang ada pada df_order
+tanggal_generate = function(var,df){
+  hasil = rep(0,n_toko)
+  min   = df[["tanggal_kirim_min"]] %>% as.numeric()
+  max   = df[["tanggal_kirim_max"]] %>% as.numeric()
+  for(i in 1:n_toko){
+    if(min[i] == max[i]){
+      hasil[i] = min[i]
+    }
+    if(min[i] != max[i]){
+      hasil[i] = sample(c(min[i]:max[i]),1)
+    }
+  }
+  return(hasil)
+}
+
+
+# ==============================================================================
+# function untuk membuat matriks jarak
+buat_matriks_jarak = function(df){
+  n_toko = nrow(df)
+  # kita tambahin untuk long lat kantor
+  df[n_toko+1,] = list(NA)
+  n_toko = nrow(df)
+  df$long[n_toko] = 0
+  df$lat[n_toko] = 0
+  # buat rumahnya terlebih dahulu
+  dist_mat = matrix(0,n_toko,n_toko)
+  # kita buat euclidean distance terlebih dahulu
+  hitung_jarak = function(i,j){
+    lon_hit = df$long[i] - df$long[j]
+    lat_hit = df$lat[i] - df$lat[j]
+    jarak = sqrt(lon_hit^2 + lat_hit^2)
+    round(jarak,3)
+  }
+  # kita hitung jaraknya sekarang
+  for(i in 1:n_toko){
+    for(j in 1:n_toko){
+      dist_mat[i,j] = hitung_jarak(i,j)
+    }
+  }
+  # hasil finalnya
+  return(dist_mat)
+}
+
+
+# ==============================================================================
+# perhitungan rute optimal
+# inputnya adalah matriks jarak
+tsp_hitung = function(new){
+  # jangan lupa new adalah df_toko yang sudah di-slice
+  jarse = buat_matriks_jarak(new)
+  problem = as.ATSP(jarse)
+  hasil = solve_TSP(problem)
+  level = row.names(new)
+  panjang_rute = tour_length(hasil)
+  detail_rute  = paste(level[as.integer(hasil)],collapse = " - ")
+  return(panjang_rute)
+}
+
+
+# ==============================================================================
+# kita akan buat objective function termasuk constraint di dalamnya
+obj_func = function(list_1,list_2){
+  # kita buat dulu ke data frame untuk mengecek semua informasi yang ada
+  df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
+  df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
+  df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
+  df_temp_3$id_armada     = round(as.vector(list_1),0) # kita rounding dulu ya
+  df_temp_3$tanggal_kirim = round(as.vector(list_2),0) # kita rounding dulu ya
+  df_temp_3 = merge(df_temp_3,df_jenis_armada)
+  
+  # konstanta penalti
+  # reinforce learning
+  beta = 10^4
+  
+  # kita pecah dulu berdasarkan armada dan tanggal
+  pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim)
+  n_pecah    = length(pecah)
+  
+  # kita hitung dulu cost per jarak
+  jarak_cost = rep(0,n_pecah)
+  for(i in 1:n_pecah){
+    temp           = pecah[[i]]
+    jarak_hit      = tsp_hitung(temp)
+    jarak_cost[i]  = jarak_hit * temp$cost_per_km[1]
+  }
+  jarak_total  = sum(jarak_cost)   # ini yang pertama disave
+  
+  # constraint 1
+  # tidak ada armada yang kelebihan muatan dalam kubikasi
+  constraint_1 = rep(0,n_pecah)
+  # constraint 2
+  # tidak ada armada yang kelebihan muatan dalam tonase
+  constraint_2 = rep(0,n_pecah)
+  # constraint 3
+  # armada yang mengantar tidak boleh melebihi max armada yang memungkinkan
+  constraint_3 = rep(0,n_pecah)
+  # constraint 4
+  # rute yang dilalui tidak melebihi max rute
+  constraint_4 = rep(0,n_pecah)
+  
+  # proses menghitung semua constraint
+  for(i in 1:n_pecah){
+    temp_1 = pecah[[i]]
+    # constraint 1
+    c_1              = sum(temp_1$order_kubikasi) - mean(temp_1$max_cap_kubikasi)
+    c_1              = max(c_1,0)
+    constraint_1[i]  = beta * c_1^2
+    
+    # constraint 2
+    c_2              = sum(temp_1$order_tonase) - mean(temp_1$max_cap_tonase)
+    c_2              = max(c_2,0)
+    constraint_2[i]  = beta * c_2^2
+    
+    # constraint 3
+    c_3              = mean(temp_1$armada) - mean(temp_1$max_armada)
+    c_3              = max(c_3,0)
+    constraint_3[i]  = beta * c_3^2
+    
+    # constraint 4
+    c_4              = nrow(temp_1) - mean(temp_1$max_titik)
+    c_4              = max(c_4,0)
+    constraint_4[i]  = beta * c_4^2
+    
+  }
+  
+  # ada beberapa constraint yang hanya bisa dilihat per tanggal kirim
+  pecah      = df_temp_3 %>% group_split(tanggal_kirim)
+  n_pecah    = length(pecah)
+  
+  # constraint 5
+  # total waktu loading
+  constraint_5 = rep(0,n_pecah)
+
+  # proses menghitung semua constraint
+  for(i in 1:n_pecah){
+    temp_1 = pecah[[i]]
+    # constraint 5
+    c_5              = sum(temp_1$loading_time) - df_gudang
+    c_5              = max(c_5,0)
+    constraint_5[i]  = beta * c_5^2
+  }
+  
+  output = jarak_total + sum(constraint_1) + sum(constraint_2) + 
+           sum(constraint_3) + sum(constraint_4) + sum(constraint_5)
+           
+  return(output)
+}
+
+
+# ==============================================================================
+# fungsi untuk rotasi dan kontraksi
+ro_kon_1 = function(list,center){
+  Xt_1 = list
+  # kita rotasikan dan konstraksikan
+  X1 = mat_rotasi %*% (Xt_1 - center_1)
+  X1 = center_1 + (.7 * X1)
+  X1 = ifelse(X1 <= 1,1,X1)
+  X1 = ifelse(X1 >= n_armada,n_armada,X1)
+  return(X1)
+}
+
+# fungsi untuk rotasi dan kontraksi
+ro_kon_2 = function(list,center){
+  Xt_2 = list
+  # kita rotasikan dan konstraksikan
+  X2 = mat_rotasi %*% (Xt_2 - center_2)
+  X2 = center_2 + (.7 * X2)
+  X2 = ifelse(X2 <= 1,1,X2)
+  X2 = ifelse(X2 >= 7,7,X2)
+  return(X2)
+}
+
+
+# ==============================================================================
+# sekarang kita akan mulai bagian SDOA
+n_toko   = nrow(df_toko)
+n_armada = nrow(df_jenis_armada)
+n_solusi = 3000
+n_sdoa   = 50
+
+# kita akan gunakan prinsip parallel processing
+# paralel
+library(parallel)
+numCores = 5 # banyaknya cores yang digunakan
+
+# list pertama yakni armada
+# bikin dummy
+df_dummy = data.frame(id = 1:n_solusi,
+                      n_toko,
+                      n_armada)
+hasil = mcmapply(armada_generate,df_dummy$n_toko,df_dummy$n_armada,
+                 mc.cores = numCores) 
+# pecah ke list
+solusi_1 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
+
+
+# list pertama yakni tanggal
+solusi_2 = vector("list",n_solusi)
+
+# kita generate calon solusi terlebih dahulu
+for(i in 1:n_solusi){
+  solusi_2[[i]] = tanggal_generate(n_toko,df_order)
+  print(i)
+}
+
+# buat matriks rotasi
+mat_rotasi = buat_rot_mat(2*pi / 30,n_toko)
+
+# initial condition
+f_hit = c()
+
+# kita hitung dulu initial function objective
+f_hit = mcmapply(obj_func,solusi_1,solusi_2,mc.cores = numCores)
+
+
+# kita mulai perhitungannya di sini
+for(iter in 1:n_sdoa){
+  # kita cari dulu mana yang akan jadi pusat
+  n_bhole = which.min(f_hit)
+  
+  # kita jadikan center of gravity
+  center_1 = solusi_1[[n_bhole]]
+  center_2 = solusi_2[[n_bhole]]
+  
+  solusi_1_new = mcmapply(ro_kon_1,solusi_1,center_1)
+  solusi_1     = lapply(seq_len(ncol(solusi_1_new)), function(i) solusi_1_new[,i])
+  
+  solusi_2_new = mcmapply(ro_kon_2,solusi_2,center_2)
+  solusi_2     = lapply(seq_len(ncol(solusi_2_new)), function(i) solusi_2_new[,i])
+  
+  # kita hitung kembali function objective
+  f_hit = mcmapply(obj_func,solusi_1,solusi_2,mc.cores = numCores)
+  
+  pesan = paste0("Iterasi ke: ",iter," hasilnya: ",min(f_hit))
+  print(pesan)
+}
+
+
+# kita akan cek solusinya
+n_bhole = which.min(f_hit)
+
+# solusinya
+center_1 = solusi_1[[n_bhole]]
+center_2 = solusi_2[[n_bhole]]
+
+# kita buat dulu ke data frame untuk mengecek semua informasi yang ada
+df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
+df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
+df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
+df_temp_3$id_armada     = round(as.vector(center_1),0) # kita rounding dulu ya
+df_temp_3$tanggal_kirim = round(as.vector(center_2),0) # kita rounding dulu ya
+df_temp_3 = merge(df_temp_3,df_jenis_armada)
+
+
+save(df_temp_3,file = "cibitung done.rda")
+
+```
 
 
 

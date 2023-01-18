@@ -1,5 +1,6 @@
 # bebersih global environment
 rm(list=ls())
+setwd("~/NTOP/output")
 
 # ==============================================================================
 # libraries yang diperlukan
@@ -9,7 +10,7 @@ library(TSP)
 
 # ==============================================================================
 # kita load datanya lagi
-load("/cloud/project/input/data dokumentasi.rda")
+load("~/NTOP/input/data dokumentasi.rda")
 
 # ==============================================================================
 # kita akan modifikasi si database jenis armada
@@ -18,7 +19,6 @@ temp =
   df_jenis_armada %>% 
   group_split(armada)
 
-i = 1
 n_temp = length(temp)
 df_hasil = data.frame()
 for(i in 1:n_temp){
@@ -38,7 +38,7 @@ df_jenis_armada =
 # lalu kita akan ambil data mana yang harus dikerjakan terlebih dahulu
 # apakah mau Ciawi atau Cibitung terlebih dahulu?
 # misalkan target gudang terlebih dahulu
-target_gudang = "ciawi"
+target_gudang = "cibitung"
 
 # kita filtering terlebih dahulu
 df_toko   = df_toko %>% filter(supplied == target_gudang)
@@ -112,6 +112,11 @@ tanggal_generate = function(var,df){
 # function untuk membuat matriks jarak
 buat_matriks_jarak = function(df){
   n_toko = nrow(df)
+  # kita tambahin untuk long lat kantor
+  df[n_toko+1,] = list(NA)
+  n_toko = nrow(df)
+  df$long[n_toko] = 0
+  df$lat[n_toko] = 0
   # buat rumahnya terlebih dahulu
   dist_mat = matrix(0,n_toko,n_toko)
   # kita buat euclidean distance terlebih dahulu
@@ -154,13 +159,12 @@ obj_func = function(list_1,list_2){
   df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
   df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
   df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
-  df_temp_3$id_armada     = round(as.vector(list_1),0) # masalahnya di rounding ini ya
-  df_temp_3$tanggal_kirim = round(as.vector(list_2),0)
+  df_temp_3$id_armada     = round(as.vector(list_1),0) # kita rounding dulu ya
+  df_temp_3$tanggal_kirim = round(as.vector(list_2),0) # kita rounding dulu ya
   df_temp_3 = merge(df_temp_3,df_jenis_armada)
   
   # konstanta penalti
-  alfa = 10^3
-  beta = 10^3
+  beta = 10^4
   
   # kita pecah dulu berdasarkan armada dan tanggal
   pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim)
@@ -232,6 +236,31 @@ obj_func = function(list_1,list_2){
   
   output = jarak_total + sum(constraint_1) + sum(constraint_2) + 
            sum(constraint_3) + sum(constraint_4) + sum(constraint_5)
+  
+  return(output)
+}
+
+# ==============================================================================
+# fungsi untuk rotasi dan kontraksi
+ro_kon_1 = function(list,center){
+  Xt_1 = list
+  # kita rotasikan dan konstraksikan
+  X1 = mat_rotasi %*% (Xt_1 - center_1)
+  X1 = center_1 + (.7 * X1)
+  X1 = ifelse(X1 <= 1,1,X1)
+  X1 = ifelse(X1 >= n_armada,n_armada,X1)
+  return(X1)
+}
+
+# fungsi untuk rotasi dan kontraksi
+ro_kon_2 = function(list,center){
+  Xt_2 = list
+  # kita rotasikan dan konstraksikan
+  X2 = mat_rotasi %*% (Xt_2 - center_2)
+  X2 = center_2 + (.7 * X2)
+  X2 = ifelse(X2 <= 1,1,X2)
+  X2 = ifelse(X2 >= 7,7,X2)
+  return(X2)
 }
 
 
@@ -242,33 +271,43 @@ obj_func = function(list_1,list_2){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
-n_solusi = 10
-n_sdoa   = 3
+n_solusi = 3000
+n_sdoa   = 50
 
-# kita buat dulu rumahnya
-solusi_1 = vector("list",n_solusi)
+# karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
+# paralel
+library(parallel)
+numCores = 5
+
+# list pertama yakni armada
+# bikin dummy
+df_dummy = data.frame(id = 1:n_solusi,
+                      n_toko,
+                      n_armada)
+hasil = mcmapply(armada_generate,df_dummy$n_toko,df_dummy$n_armada,
+                 mc.cores = numCores) 
+# pecah ke list
+solusi_1 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
+
+
+# list pertama yakni tanggal
 solusi_2 = vector("list",n_solusi)
 
 # kita generate calon solusi terlebih dahulu
 for(i in 1:n_solusi){
-  solusi_1[[i]] = armada_generate(n_toko,n_armada)
   solusi_2[[i]] = tanggal_generate(n_toko,df_order)
+  print(i)
 }
 
 # buat matriks rotasi
-mat_rotasi = buat_rot_mat(2*pi / 100,n_toko)
+mat_rotasi = buat_rot_mat(2*pi / 30,n_toko)
 
 # initial condition
 f_hit = c()
 
 # kita hitung dulu initial function objective
-for (i in 1:n_solusi){
-  temp = obj_func(solusi_1[[i]],solusi_2[[i]])
-  f_hit[i] = temp
-}
+f_hit = mcmapply(obj_func,solusi_1,solusi_2,mc.cores = numCores)
 
-
-f_hit
 
 # kita mulai perhitungannya di sini
 for(iter in 1:n_sdoa){
@@ -279,37 +318,37 @@ for(iter in 1:n_sdoa){
   center_1 = solusi_1[[n_bhole]]
   center_2 = solusi_2[[n_bhole]]
   
-  for(i in 1:n_solusi){
-    Xt_1 = solusi_1[[i]]
-    Xt_2 = solusi_2[[i]]
-    # kita rotasikan dan konstraksikan
-    X1 = mat_rotasi %*% (Xt_1 - center_1)
-    X1 = center_1 + (.7 * X1)
-    # kita rotasikan dan konstraksikan
-    X2 = mat_rotasi %*% (Xt_2 - center_2)
-    X2 = center_2 + (.7 * X2)
-    # save balik ke sini
-    solusi_1[[i]] = X1
-    solusi_2[[i]] = X2
-    # kita hitung kembali
-    list_1 = solusi_1[[i]]
-    list_2 = solusi_2[[i]]
-    temp = obj_func(list_1,list_2)
-    f_hit[i] = temp
-  }
+  solusi_1_new = mcmapply(ro_kon_1,solusi_1,center_1)
+  solusi_1     = lapply(seq_len(ncol(solusi_1_new)), function(i) solusi_1_new[,i])
   
-  print(min(f_hit))
+  solusi_2_new = mcmapply(ro_kon_2,solusi_2,center_2)
+  solusi_2     = lapply(seq_len(ncol(solusi_2_new)), function(i) solusi_2_new[,i])
+  
+  # kita hitung kembali function objective
+  f_hit = mcmapply(obj_func,solusi_1,solusi_2,mc.cores = numCores)
+  
+  pesan = paste0("Iterasi ke: ",iter," hasilnya: ",min(f_hit))
+  print(pesan)
 }
 
 
+# kita akan cek solusinya
+n_bhole = which.min(f_hit)
+
+# solusinya
+center_1 = solusi_1[[n_bhole]]
+center_2 = solusi_2[[n_bhole]]
+
+# kita buat dulu ke data frame untuk mengecek semua informasi yang ada
+df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
+df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
+df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
+df_temp_3$id_armada     = round(as.vector(center_1),0) # kita rounding dulu ya
+df_temp_3$tanggal_kirim = round(as.vector(center_2),0) # kita rounding dulu ya
+df_temp_3 = merge(df_temp_3,df_jenis_armada)
 
 
-
-
-
-
-
-
+save(df_temp_3,file = "cibitung done.rda")
 
 
 
