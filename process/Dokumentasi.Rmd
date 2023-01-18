@@ -1,5 +1,5 @@
 ---
-title: "Nutrifood Transporter Routing Optimization Problem Menggunakan Spiral Dynamic Optimization Algorithm"
+title: "Penyelesaian Nutrifood Transporter Routing Optimization Problem Menggunakan Spiral Dynamic Optimization Algorithm"
 subtitle: | 
     | Dokumentasi Modelling dan Penyelesaian
     | Menggunakan R
@@ -81,8 +81,8 @@ Masing-masing konsumen memiliki keterbatas lain terkait armada yang bisa dilalui
 
 Untuk menyelesaikan model optimisasi ini, saya akan menggunakan pendekatan _meta heuristic_ dibandingkan penyelesaian secara _exact_. Berikut alasannya:
 
-1. Kita tidak perlu menuliskan model matematika yang kompleks karena permasalahan yang kita hadapi ini memiliki indeks yang tinggi. Kita cukup menuliskan algoritma (_computational model_) berdasarkan definisi dan _constraints_ secara logis.
-1. Penyelesaian dengan metode _exact_ memang menjamin keoptimalan solusi namun tidak semua model bisa dicari solusinya. Sedangkan penyelesaian dengan metode _meta heuristic_, tidak menjamin solusi yang didapatkan adalah solusi yang paling optimal. Namun kita bisa menjadikan solusi tersebut _near optimal_ dengan melakukan _tweaking_ pada algoritma.
+1. Kita tidak perlu menuliskan model matematika yang kompleks karena permasalahan yang kita hadapi ini memiliki indeks yang tinggi. Kita cukup menuliskan algoritma (_computational model_) berdasarkan definisi dan _constraints_ secara logis. Sehingga proses _modelling_ bisa dilakukan dengan lebih cepat.
+1. Penyelesaian dengan metode _exact_ memang menjamin keoptimalan solusi. Sedangkan penyelesaian dengan metode _meta heuristic_, walaupun tidak ada jaminan solusi yang didapatkan adalah solusi yang paling optimal tapi kita bisa mencari solusi _near optimal_ dengan melakukan _tweaking_ pada algoritma tersebut.
 
 Pendekatan _meta heuristic_ yang akan saya gunakan adalah _Spiral Dynamic Optimization Algorithm_.
 
@@ -92,9 +92,9 @@ Pendekatan _meta heuristic_ yang akan saya gunakan adalah _Spiral Dynamic Optimi
 
 ## Penjelasan Singkat
 
-_Spiral Dynamic Optimization Algorithm_ (SDOA) adalah salah satu metode _meta heuristic_ yang digunakan untuk mencari minimum global dari suatu sistem persamaan. 
+_Spiral Dynamic Optimization Algorithm_ (SDOA) adalah salah satu metode _meta heuristic_ yang digunakan untuk mencari minimum global dari suatu sistem persamaan. SDOA termasuk ke dalam salah satu _greedy algorithm_ yang biasa digunakan untuk memecahkan berbagai masalah dalam sains dan _engineering_.
 
-Algoritmanya mudah dipahami dan intuitif tanpa harus memiliki latar keilmuan tertentu. Proses kerjanya adalah dengan melakukan _random number generating_ pada suatu selang dan melakukan rotasi sekaligus kontraksi dengan titik paling minimum pada setiap iterasi sebagai pusatnya.
+Algoritmanya mudah dipahami dan intuitif tanpa harus memiliki latar keilmuan tertentu. Proses kerjanya adalah dengan melakukan _random number generating_ pada suatu selang dan melakukan rotasi sekaligus kontraksi dengan titik paling minimum pada setiap iterasi sebagai pusatnya. Pusat rotasi akan dipilih dari calon solusi yang _near optimal_. Dengan adanya iterasi tersebut, proses eksploitasi dan eksplorasi terhadap calon solusi lain bisa dijalankan sehingga kita akan dapatkan solusi paling optimal di akhir iterasi.
 
 Berikut adalah algoritmanya:
 
@@ -124,7 +124,7 @@ Berdasarkan algoritma di atas, salah satu proses yang penting adalah melakukan _
 
 ## Menyelesaikan Masalah Optimisasi dengan SDOA
 
-Misal suatu permasalahan MILP atau MINLP bisa ditulis secara umum sebagai berikut:
+Permasalahan Nutrifood terkait _transporter_ merupakan salah satu bentuk _Mixed Integer Non Linear Programming_ (MINLP). Secara umum, bentuk MINLP bisa ditulis sebagai berikut:
 
 $$\min_{x \in \mathbb{R}^n} f(x)$$
 
@@ -134,11 +134,11 @@ $$\text{and } h_j(x) \leq 0,i = 1,2,..,N$$
 
 $$x = (x_1,x_2,...,x_n)^T \in \mathbb{N}$$
 
-Bentuk di atas bisa kita ubah menjadi:
+Agar bsa diselesaikan dengan SDOA, kita akan mengubah bentuk di atas menjadi:
 
 $$F(x,\alpha,\beta) = f(x) + \sum_{i=1}^M \alpha_i g_i^2(x) + \sum_{j = 1}^N \beta_j (\max{(h_i(x),0)})^2$$
 
-dimana $\alpha,\beta$ merupakan _penalty constant_ yang bisa dibuat sangat besar.
+dimana $\alpha,\beta$ merupakan _penalty constant_ yang bisa dibuat sangat besar. Model komputasi ini dikenal juga dengan sebutan _reinforce learning_.
 
 ## Matriks Rotasi untuk n-Dimensi
 
@@ -261,185 +261,35 @@ Tuliskan:
 - $\forall g \in \mathcal{G}, ts1_g$ sebagai total _time slot_ gudang $g$ pada _weekday_.
 - $\forall g \in \mathcal{G}, ts2_g$ sebagai total _time slot_ gudang $g$ pada _weekend_.
 
-Dari _sets_ dan parameter di atas, kita akan buat _computational model_-nya sebagai berikut.
-
-\newpage
+Oleh karena menuliskan model matematikanya rumit, maka informasi _sets_ dan parameter yang ada di atas akan kita jadikan modal untuk menuliskan _computational model_-nya.
 
 # _COMPUTATIONAL MODEL_
 
-Untuk membuat model komputasinya, kita buat terlebih dahulu beberapa _function_ dasar berikut ini:
+Model komputasi yang digunakan saya akan lampirkan pada dokumen ini.
 
-## _Function_ Dasar
+## Asumsi
 
-Berikut adalah beberapa _function_ dasar yang akan digunakan pada SDOA.
+Beberapa asumsi yang digunakan:
 
-### _Rotation Matrix_
+1. Perhitungan jarak menggunakan formula _euclidean distance_, yakni panjang garis lurus antara dua titik. Kita dapatkan nilainya menggunakan hukum _Pytagoras_ sederhana.
+1. Total _loading time_ gudang baru berisi satu nilai saja (belum ada pembagian _weekend_ dan _weekday_).
+1. Banyaknya ketersediaan armada berbeda-beda dan nilainya terbatas.
+1. Model ini hanya meng-_cover_ waktu pengiriman selama 7 hari.
 
-Ini adalah _function_ untuk membuat matriks rotasi:
+## _Constraints_
 
-```{r,message=FALSE,warning=FALSE}
-# function matriks rotasi
-buat_rot_mat = function(theta,n){
-  # buat template sebuah matriks identitas
-  temp_mat = matrix(0,ncol = n,nrow = n)
-  diag(temp_mat) = 1
-  
-  # buat matriks identitas terlebih dahulu
-  mat_rot = temp_mat
-  # membuat isi matriks rotasi
-  for(i in 1:(n-1)){
-    for(j in 1:i){
-      temp = temp_mat
-      idx = n-i
-      idy = n+1-j
-      # print(paste0("Matriks rotasi untuk ",idx," - ",idy,": DONE"))
-      temp[idx,idx] = cos(theta)
-      temp[idx,idy] = -sin(theta)
-      temp[idy,idx] = sin(theta)
-      temp[idy,idy] = cos(theta)
-      # assign(paste0("M",idx,idy),temp)
-      mat_rot = mat_rot %*% temp
-      mat_rot = mat_rot 
-    }
-  }
-  # output matriks rotasi
-  return(mat_rot)
-}
+Beberapa _constraints_ yang ada pada model:
 
-```
+1. Tidak boleh ada armada yang kelebihan muatan dalam hal kubikasi dan tonase.
+1. Banyaknya armada yang mengantar tidak boleh melebihi banyaknya ketersediaan armada.
+1. Banyaknya toko yang ada pada rute tidak melebihi aturan maksimum toko per armada.
+1. Waktu _loading_ gudang perhari tidak boleh dilanggar.
 
-\newpage
+## _Objective Function_
 
-### _Generator_ Calon Solusi
+Fungsi objektif pada model ini adalah:
 
-Kelak calon solusi yang diharapkan memiliki format sebagai berikut:
-
-```{r,message=FALSE,warning=FALSE,echo=FALSE}
-df_order %>%
-  mutate(armada_kirim  = sample(5,nrow(df_order),replace = T)) %>% 
-  rowwise() %>% 
-  mutate(tanggal_kirim = sample(tanggal_kirim_min:tanggal_kirim_max,1)) %>% 
-  ungroup() %>% 
-  select(-tanggal_kirim_max,
-         -tanggal_kirim_min) %>% 
-  knitr::kable(caption = "Calon Solusi yang Diharapkan")
-```
-
-
-Oleh karena itu, solusi yang perlu di-_generate_ ada dua variabel:
-
-1. `armada_kirim`, yakni armada yang digunakan untuk mengirimkan pesanan toko.
-1. `tanggal_kirim`, yakni tanggal pesanan toko dikirim.
-
-Berikut adalah _function_ _generator_-nya:
-
-```{r,message=FALSE,warning=FALSE}
-# generate solusi untuk armada
-armada_generate = function(n_toko,n_armada){
-  sample(n_armada,n_toko,replace = T)
-}
-
-# generate tanggal kirim sesuai dengan data yang ada pada df_order
-tanggal_generate = function(var,df){
-  hasil = rep(0,n_toko)
-  min   = df[["tanggal_kirim_min"]] %>% as.numeric()
-  max   = df[["tanggal_kirim_max"]] %>% as.numeric()
-  for(i in 1:n_toko){
-    if(min[i] == max[i]){
-      hasil[i] = min[i]
-    }
-    if(min[i] != max[i]){
-      hasil[i] = sample(c(min[i]:max[i]),1)
-    }
-  }
-  return(hasil)
-}
-```
-
-
-### Menghitung Matriks Jarak
-
-Berikut adalah _function_ untuk matriks jarak:
-
-```{r,message=FALSE,warning=FALSE}
-# function untuk membuat matriks jarak
-buat_matriks_jarak = function(df){
-  n_toko = nrow(df)
-  # buat rumahnya terlebih dahulu
-  dist_mat = matrix(0,n_toko,n_toko)
-  # kita buat euclidean distance terlebih dahulu
-  hitung_jarak = function(i,j){
-    lon_hit = df$long[i] - df$long[j]
-    lat_hit = df$lat[i] - df$lat[j]
-    jarak = sqrt(lon_hit^2 + lat_hit^2)
-    round(jarak,3)
-  }
-  # kita hitung jaraknya sekarang
-  for(i in 1:n_toko){
-    for(j in 1:n_toko){
-      dist_mat[i,j] = hitung_jarak(i,j)
-    }
-  }
-  # hasil finalnya
-  return(dist_mat)
-}
-```
-
-
-### Menghitung Panjang Rute Optimal
-
-Berikut adalah _function_ untuk menghitung panjang rute optimal dari _input_ berupa _database_ toko:
-
-```{r,message=FALSE,warning=FALSE}
-# perhitungan rute optimal
-# inputnya adalah matriks jarak
-tsp_hitung = function(new){
-  # jangan lupa new adalah df_toko yang sudah di-slice
-  jarse = buat_matriks_jarak(new)
-  problem = as.ATSP(jarse)
-  hasil = solve_TSP(problem)
-  level = row.names(new)
-  panjang_rute = tour_length(hasil)
-  detail_rute  = paste(level[as.integer(hasil_1)],collapse = " - ")
-  return(panjang_rute)
-}
-```
-
-
-## _Objective Function_ dan _Constraints_
-
-Berikut adalah _objective function_ dan beberapa _constraints_ yang dituliskan dalam satu _function_:
-
-
-```{r,message=FALSE,warning=FALSE}
-# kita akan buat function untuk objective function
-obj_func = function(list_1,list_2){
-  # kita buat dulu ke data frame awalnya
-  df_toko$armada_assign <<- list_1
-  df_toko$tanggal_kirim <<- list_2
-  # kita hitung dulu
-  pecah   = df_toko %>% group_split(armada_assign)
-  n_pecah = length(pecah)
-  jarak = rep(0,n_pecah)
-  for(i in 1:n_pecah){
-    temp      = pecah[[i]]
-    jarak_hit = tsp_hitung(temp)
-    jarak[i]  = jarak_hit
-  }
-  output = 
-    list(jarak_detail = jarak,
-         jarak_total  = sum(jarak))
-  return(output$jarak_total)
-}
-```
-
-
-
-
-
-
-
-
+> Meminimumkan total biaya yang timbul dari setiap keputusan toko $i$ dikirim armada $j$ pada tanggal $k$ tanpa melanggar _constraints_ yang ada.
 
 
 
