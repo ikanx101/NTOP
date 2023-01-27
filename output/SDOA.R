@@ -12,6 +12,12 @@ library(TSP)
 # kita load datanya lagi
 load("~/NTOP/input/data dokumentasi.rda")
 
+
+# apakah mau Ciawi atau Cibitung terlebih dahulu?
+# misalkan target gudang terlebih dahulu
+target_gudang = "ciawi"
+nama_file_rda = paste0(target_gudang," done.rda")
+
 # ==============================================================================
 # kita akan modifikasi si database jenis armada
 # yakni dengan mereplikasi baris-baris tergantung dari ketersediaan armada
@@ -36,9 +42,6 @@ df_jenis_armada =
   select(-tersedia)
 
 # lalu kita akan ambil data mana yang harus dikerjakan terlebih dahulu
-# apakah mau Ciawi atau Cibitung terlebih dahulu?
-# misalkan target gudang terlebih dahulu
-target_gudang = "cibitung"
 
 # kita filtering terlebih dahulu
 df_toko   = df_toko %>% filter(supplied == target_gudang)
@@ -348,7 +351,7 @@ df_temp_3$tanggal_kirim = round(as.vector(center_2),0) # kita rounding dulu ya
 df_temp_3 = merge(df_temp_3,df_jenis_armada)
 
 
-save(df_temp_3,file = "cibitung done.rda")
+save(df_temp_3,file = nama_file_rda)
 
 
 
