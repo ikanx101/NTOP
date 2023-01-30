@@ -39,7 +39,7 @@ delete = function(n){
 # kita mulai looping
 hasil = vector("list",length(keyword))
 for(i in 1:length(keyword)){
-  hasil[[i]]
+  hasil[[i]] = df[i,]
   
 }
 
