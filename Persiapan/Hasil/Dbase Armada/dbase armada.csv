@@ -1,0 +1,8 @@
+"jenis_mobil","kubikasi_max","tonase_max_ton","index_biaya_per_km_per_mobil","index_untuk_replacing","kapasitas_kirim_per_1_mobil_brp_drop_point","loading_runtime_menit"
+"CARRY",5,1.5,0.76,1,5,25
+"CDE",7,2,1,2,5,30
+"CDD",12,5,1.27,3,5,60
+"CDD JUMBO",17,5,1.56,4,5,60
+"FUSO",24,9,2.23,5,5,75
+"TRONTON",33,11,2.56,6,5,105
+"BU",45,20,3.23,7,5,105
