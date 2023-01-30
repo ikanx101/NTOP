@@ -8,7 +8,9 @@ library(tidyr)
 
 # baca data
 df       = read.csv("kode_pos_all.csv")
+df$url   = NA
 keyword  = paste(df$kecamatan,df$kota_kab,df$provinsi,sep = ",")
+
 
 # buka url utama
 url = "https://www.google.co.id/"
@@ -39,8 +41,8 @@ delete = function(n){
 # kita mulai looping
 hasil = vector("list",length(keyword))
 for(i in 1:length(keyword)){
+  df$url[i]  = remDr
   hasil[[i]] = df[i,]
-  
 }
 
 
