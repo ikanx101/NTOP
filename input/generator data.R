@@ -1,4 +1,4 @@
-setwd("~/NTOP/input")
+setwd("~/Nutrifood Transporter Optimization/input")
 
 rm(list=ls())
 
@@ -40,7 +40,7 @@ for(i in 1:nrow(df_jenis_armada)){
 
 
 # data terkait alamat tujuan
-n_toko = 15
+n_toko = 40
 nama_toko  = randomNames::randomNames(n_toko) %>% tolower()
 nama_toko  = paste("toko",nama_toko)
 long       = runif(n_toko)
@@ -104,7 +104,7 @@ mat_toko_supply = data.matrix(mat_toko_supply)
 nama_toko
 order_kubikasi = sample(4:30,n_toko,replace = T)
 order_tonase   = order_kubikasi * (1 + runif(1)/2)
-n_tanggal      = 7   # range tanggal yang mungkin terjadi 
+n_tanggal      = 5   # range tanggal yang mungkin terjadi 
 
 # kita akan buat function untuk generate tanggal min max yang akan muncul
 tanggal_min_max = function(n_tanggal,n_toko){
