@@ -1,4 +1,4 @@
-setwd("~/NTOP/Persiapan/Raw Data")
+setwd("~/Nutrifood Transporter Optimization/Persiapan/Raw Data")
 
 # ambil libraries yang dibutuhkan
 library(dplyr)
@@ -17,7 +17,7 @@ df_cust   = df %>% select(customer,tipe,kode_pos,kapasitas_mobil_max)
 kode_pos_target = df_cust$kode_pos %>% unique() %>% sort()
 
 # load function scraper
-source("~/NTOP/Persiapan/Kode Pos Scraper/scraper.R")
+source("~/Nutrifood Transporter Optimization/Persiapan/Kode Pos Scraper/scraper.R")
 
 hasil = vector("list",length(kode_pos_target))
 for(i in 1:length(kode_pos_target)){
@@ -25,6 +25,15 @@ for(i in 1:length(kode_pos_target)){
   print(i)
 }
 
+# gabungan semua
 final = do.call(rbind,hasil)
 
-final
+# kita save dulu data yang sudah ada
+final %>% 
+  filter(!is.na(provinsi)) %>% 
+  write.csv("kode_pos_done_tahap_1.csv",row.names = F)
+
+# kita ambil yang belum ada sama sekali
+kode_pos_belum = final %>% filter(is.na(provinsi))
+
+write.csv(kode_pos_belum,"kode_pos_belum.csv",row.names = F)
