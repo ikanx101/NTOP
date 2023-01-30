@@ -42,13 +42,14 @@ delete = function(n){
 hasil = vector("list",length(keyword))
 for(i in 1:length(keyword)){
   remDr$navigate(url)
-  Sys.sleep(runif(1,3,5))
+  Sys.sleep(runif(1,2,3))
   cari_keyword(keyword[i])
   Sys.sleep(runif(1,3,5))
   df$url[i]  = remDr$getCurrentUrl()[[1]]
   hasil[[i]] = df[i,]
-  Sys.sleep(runif(1,3,5))
+  print(i)
+  Sys.sleep(runif(1,1,2))
 }
 
 hasil_final = do.call(rbind,hasil)
-write.csv(hasil_final,"kode_pos_longlat.csv",row.names = T)
+write.csv(hasil_final,"kode_pos_longlat_done.csv",row.names = T)
