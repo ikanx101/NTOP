@@ -40,7 +40,11 @@ for(i in 1:nrow(df_jenis_armada)){
 
 
 # data terkait alamat tujuan
+<<<<<<< HEAD:input/generator data.R
 n_toko = 40
+=======
+n_toko = 50
+>>>>>>> e1d2420bb391b7f64c0b617c1371fe060e9d7e6f:Pilot/input/generator data.R
 nama_toko  = randomNames::randomNames(n_toko) %>% tolower()
 nama_toko  = paste("toko",nama_toko)
 long       = runif(n_toko)

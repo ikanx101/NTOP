@@ -174,7 +174,7 @@ Penjelasan terkait variabel dari tabel di atas:
 1. `tanggal_kirim_min`, yakni tanggal berapa produk sudah bisa dikirim.
 1. `tanggal_kirim_max`, yakni tanggal berapa produk paling lambat harus dikirim.
 
-```{r, echo=FALSE,message=FALSE,warning=FALSE,fig.cap="Jadwal Pengiriman yang Diperbolehkan",fig.height=3}
+```{r, echo=FALSE,message=FALSE,warning=FALSE,fig.cap="Jadwal Pengiriman yang Diperbolehkan",fig.height=7}
 df_order %>% 
   reshape2::melt(measure.vars = c("tanggal_kirim_min","tanggal_kirim_max")) %>% 
   ggplot(aes(x = value, 
@@ -203,8 +203,9 @@ Penjelasan terkait variabel dari tabel di atas:
 1. `max_armada`, yakni jenis armada terbesar yang bisa masuk ke toko. Misalkan, jika `max_armada = 2`, artinya toko tersebut bisa dilalui armada jenis `1` dan `2`.
 1. `supplied`, yakni gudang yang men-_supply_ toko tersebut.
 
+\newpage
 
-```{r, echo=FALSE,message=FALSE,warning=FALSE,fig.cap="Peta Lokasi Toko",fig.height=3.5}
+```{r, echo=FALSE,message=FALSE,warning=FALSE,fig.cap="Peta Lokasi Toko",fig.height=7}
 df_toko %>% 
   ggplot(aes(x = long,
              y = lat,
@@ -225,6 +226,7 @@ df_toko %>%
   
 ```
 
+\newpage
 
 ## Data Terkait Gudang
 
@@ -421,6 +423,14 @@ printing(temp)
 i = 5
 temp = list_jadwal[[i]]
 printing(temp)
+
+i = 6
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 7
+temp = list_jadwal[[i]]
+printing(temp)
 ```
 
 
@@ -466,6 +476,22 @@ temp = list_jadwal[[i]]
 printing(temp)
 
 i = 2
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 3
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 4
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 5
+temp = list_jadwal[[i]]
+printing(temp)
+
+i = 6
 temp = list_jadwal[[i]]
 printing(temp)
 ```
