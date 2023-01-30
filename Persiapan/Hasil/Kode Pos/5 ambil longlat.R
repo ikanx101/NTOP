@@ -13,7 +13,7 @@ keyword  = paste(df$kecamatan,df$kota_kab,df$provinsi,sep = ",")
 
 
 # buka url utama
-url = "https://www.google.co.id/"
+url = "https://www.google.co.id/maps/@-6.1834007,106.9240557,15z"
 
 # nyalakan jika diperlukan
 # system('docker run -d -p 4445:4444 selenium/standalone-firefox')
@@ -41,8 +41,13 @@ delete = function(n){
 # kita mulai looping
 hasil = vector("list",length(keyword))
 for(i in 1:length(keyword)){
-  df$url[i]  = remDr
+  remDr$navigate(url)
+  Sys.sleep(runif(1,3,5))
+  cari_keyword(keyword[i])
+  Sys.sleep(runif(1,3,5))
+  df$url[i]  = remDr$getCurrentUrl()[[1]]
   hasil[[i]] = df[i,]
+  Sys.sleep(runif(1,3,5))
 }
 
 
