@@ -50,4 +50,5 @@ for(i in 1:length(keyword)){
   Sys.sleep(runif(1,3,5))
 }
 
-
+hasil_final = do.call(rbind,hasil)
+write.csv(hasil_final,"kode_pos_longlat.csv",row.names = T)
