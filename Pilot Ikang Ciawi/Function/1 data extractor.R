@@ -35,7 +35,12 @@ df_cust_uncomplete =
   df_cust_complete %>% 
   filter(is.na(lat)) 
 
+# sedangkan ini adalah database untuk customer yang complete ada longlatnya
 df_cust_complete = df_cust_complete %>% filter(!is.na(lat))
+
+# kita mulai dari armada dulu
+df_armada %>% colnames()
+
 
 save(df_sales_order,df_armada,df_gudang,df_cust_complete,
      df_cust_uncomplete,
