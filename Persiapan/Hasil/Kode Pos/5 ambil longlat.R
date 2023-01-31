@@ -1,5 +1,8 @@
 rm(list=ls())
 
+# scraper pakai komputernya mas kodirin
+# perhatikan perubahan setting yang ada
+
 # libraries
 library(dplyr)
 library(rvest)
@@ -13,12 +16,16 @@ keyword  = paste(df$kecamatan,df$kota_kab,df$provinsi,sep = ",")
 
 
 # buka url utama
-url = "https://www.google.co.id/maps/@-6.1834007,106.9240557,15z"
+url = "https://www.google.com/maps"
 
-# nyalakan jika diperlukan
-# system('docker run -d -p 4445:4444 selenium/standalone-firefox')
-remDr = remoteDriver(remoteServerAddr = "localhost", port = 4445L, browserName = "firefox")
-remDr$open()
+# version chrome
+version = "108.0.5359.71"
+
+# memulai selenium
+driver =  RSelenium::rsDriver(browser = "chrome",
+                              chromever = version)
+remDr  = driver[["client"]]
+
 
 # function untuk memasukkan keyword
 cari_keyword = function(keyword){
@@ -53,3 +60,5 @@ for(i in 1:length(keyword)){
 
 hasil_final = do.call(rbind,hasil)
 write.csv(hasil_final,"kode_pos_longlat_done.csv",row.names = T)
+
+save(hasil_final,file = "hasil kodepos longlat.rda")
