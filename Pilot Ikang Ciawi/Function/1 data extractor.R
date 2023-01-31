@@ -31,5 +31,12 @@ df_cust_complete = merge(df_cust_pos,df_kode_pos,all.x = T)
 
 # ini sebagai informasi, ada beberapa list customer yang tidak memiliki kode pos
 # dan atau memiliki kodepos tapi tidak ditemukan padanan provinsi, kota, dan kecamatannya
-df_cust_complete %>% filter(is.na(lat)) %>% 
-  openxlsx::write.xlsx(file = "list customer tak dimasukkan.xlsx")
+df_cust_uncomplete = 
+  df_cust_complete %>% 
+  filter(is.na(lat)) 
+
+df_cust_complete = df_cust_complete %>% filter(!is.na(lat))
+
+save(df_sales_order,df_armada,df_gudang,df_cust_complete,
+     df_cust_uncomplete,
+     file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/ready.rda")

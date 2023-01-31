@@ -125,8 +125,13 @@ Alasan: Rotasi tidak mengubah _norm_ suatu vektor.
 
 # DATA TERKAIT
 
-Pada _report_ ini
+Pada _report_ ini, kita akan gunakan data yang sudah dihimpun oleh tim DTA dan DT. Berikut adalah data-data yang sudah dilakukan _pre-processing_:
 
+## Data Armada
+
+```{r}
+
+```
 
 
 
