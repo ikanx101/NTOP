@@ -12,6 +12,9 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+setwd("~/NTOP/Pilot Ikang Ciawi/Dokumentasi")
+
+load("ready.rda")
 ```
 
 # PENDAHULUAN
@@ -129,8 +132,8 @@ Pada _report_ ini, kita akan gunakan data yang sudah dihimpun oleh tim DTA dan D
 
 ## Data Armada
 
-```{r}
-
+```{r,echo=FALSE}
+df_armada
 ```
 
 
