@@ -126,6 +126,7 @@ df_sales_order_ready =
          tanggal_kirim_max = tanggal_kirim_max - min_number)
 # ==============================================================================
 
+
 # ==============================================================================
 # berikutnya kita hanya akan ambil database longlat toko yang ada di data sales 
   # order ready saja
@@ -135,14 +136,24 @@ df_cust_complete_ready =
 # ==============================================================================
 
 
-
 # ==============================================================================
 # kita save datanya terlebih dahulu
+# untuk keperluan dokumentasi
 save(df_sales_order,
      df_sales_order_ready,tanggal_minimal,
      df_armada,df_gudang,
      df_cust_complete,
      df_cust_uncomplete,
      df_cust_complete_ready,
-     file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/ready.rda")
+     file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/dokumentasi.rda")
+
+# sedangkan yang ini untuk keperluan modelling
+df_jenis_armada = df_armada
+df_toko         = df_cust_complete_ready
+df_order        = df_sales_order_ready
+df_gudang       = df_gudang
+
+save(df_jenis_armada,df_toko,df_order,df_gudang,
+     file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/modelling.rda")
 # ==============================================================================
+
