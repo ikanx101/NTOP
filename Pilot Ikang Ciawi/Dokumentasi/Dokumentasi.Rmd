@@ -19,7 +19,7 @@ rm(list=ls())
 library(dplyr)
 library(tidyr)
 
-load("ready.rda")
+load("dokumentasi.rda")
 ```
 
 # PENDAHULUAN
