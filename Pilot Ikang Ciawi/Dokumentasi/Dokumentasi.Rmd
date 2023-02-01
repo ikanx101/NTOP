@@ -14,6 +14,11 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 setwd("~/NTOP/Pilot Ikang Ciawi/Dokumentasi")
 
+rm(list=ls())
+
+library(dplyr)
+library(tidyr)
+
 load("ready.rda")
 ```
 
@@ -130,11 +135,33 @@ Alasan: Rotasi tidak mengubah _norm_ suatu vektor.
 
 Pada _report_ ini, kita akan gunakan data yang sudah dihimpun oleh tim DTA dan DT. Berikut adalah data-data yang sudah dilakukan _pre-processing_:
 
+## Data Terkait Order Toko
+
+```{r,echo=FALSE}
+df_sales_order_ready %>% 
+  select(-sales_order) %>% 
+  DT::datatable(caption = "Data Sales Order",filter = "bottom")
+```
+
+## Data Informasi Detail Toko
+
+```{r,echo=FALSE}
+df_cust_complete_ready %>% 
+  DT::datatable(caption = "Data Informasi Detail ALamat Toko",filter = "bottom")
+```
+
+## Data Gudang
+
+```{r,echo=FALSE}
+df_gudang %>% 
+  DT::datatable(caption = "Data Gudang",filter = "none")
+```
+
 ## Data Armada
 
 ```{r,echo=FALSE}
-df_armada
+df_armada %>% 
+  DT::datatable(caption = "Data Armada",filter = "none")
 ```
-
 
 

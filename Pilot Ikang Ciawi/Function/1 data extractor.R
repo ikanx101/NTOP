@@ -96,7 +96,8 @@ df_sales_order =
   ungroup() %>% 
   arrange(tanggal_kirim_min) %>% 
   filter(!is.na(order_kubikasi)) %>% 
-  filter(!is.na(tanggal_kirim_min))
+  filter(!is.na(tanggal_kirim_min)) %>% 
+  rename(nama_toko = nama_customer)
 
 # kita akan ambil range tanggal tertentu saja
 range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[1:7]
@@ -125,12 +126,23 @@ df_sales_order_ready =
          tanggal_kirim_max = tanggal_kirim_max - min_number)
 # ==============================================================================
 
+# ==============================================================================
+# berikutnya kita hanya akan ambil database longlat toko yang ada di data sales 
+  # order ready saja
+df_cust_complete_ready = 
+  df_cust_complete %>% 
+  filter(nama_toko %in% df_sales_order_ready$nama_toko)
+# ==============================================================================
+
+
 
 # ==============================================================================
 # kita save datanya terlebih dahulu
 save(df_sales_order,
      df_sales_order_ready,tanggal_minimal,
-     df_armada,df_gudang,df_cust_complete,
+     df_armada,df_gudang,
+     df_cust_complete,
      df_cust_uncomplete,
+     df_cust_complete_ready,
      file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/ready.rda")
 # ==============================================================================
