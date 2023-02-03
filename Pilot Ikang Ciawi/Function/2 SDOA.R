@@ -198,7 +198,7 @@ obj_func = function(list_1,list_2){
   df_temp_3 = merge(df_temp_3,df_jenis_armada)
   
   # konstanta penalti
-  beta = 10^4
+  beta = 10^5
   
   # kita pecah dulu berdasarkan armada dan tanggal
   pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim)
@@ -306,13 +306,13 @@ ro_kon_2 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
-n_solusi = 3000
-n_sdoa   = 50
+n_solusi = 1400
+n_sdoa   = 60
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
 # paralel
 library(parallel)
-numCores = 10
+numCores = 7
 
 # list pertama yakni armada
 # bikin dummy

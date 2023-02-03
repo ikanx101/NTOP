@@ -7,7 +7,7 @@ library(parallel)
 
 # ==============================================================================
 # set jumlah cores
-numcore = 2
+numcore = 5
 
 # folder data
 path = "~/NTOP/Pilot Ikang Ciawi/Data Mentah"
@@ -49,13 +49,14 @@ df_cust_complete = df_cust_complete %>% filter(!is.na(lat))
 df_armada = 
   df_armada %>% 
   mutate(armada           = 1:nrow(df_armada),
-         tersedia         = 15) %>% 
+         tersedia         = 8) %>% 
   rename(max_cap_kubikasi = kubikasi_max,
          max_cap_tonase   = tonase_max_ton,
          cost_per_km      = index_biaya_per_km_per_mobil,
          max_titik        = kapasitas_kirim_per_1_mobil_brp_drop_point,
          loading_time     = loading_runtime_menit) %>% 
-  mutate(loading_time     = round((loading_time + 15) / 60,1)) %>% 
+  mutate(loading_time     = round((loading_time + 10) / 60,1),
+         max_cap_tonase   = max_cap_tonase * 1000) %>% 
   select(armada,max_cap_kubikasi,max_cap_tonase,cost_per_km,tersedia,max_titik,loading_time)
 # ==============================================================================
 
@@ -65,7 +66,8 @@ df_armada =
 df_gudang =
   df_gudang %>% 
   mutate(week_day_hour   = loading_dock * weekday_hour,
-         week_end_hour   = loading_dock * weekend_hour) %>% 
+         week_end_hour   = loading_dock * weekend_hour,
+         site            = tolower(site)) %>% 
   select(site,week_day_hour,week_end_hour)
 # ==============================================================================
 
@@ -100,7 +102,7 @@ df_sales_order =
   rename(nama_toko = nama_customer)
 
 # kita akan ambil range tanggal tertentu saja
-range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[1:7]
+range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[2:8]
 
 # kita akan ambil range tanggal tersebut saja
 df_sales_order_ready = 
@@ -152,6 +154,18 @@ df_jenis_armada = df_armada
 df_toko         = df_cust_complete_ready
 df_order        = df_sales_order_ready
 df_gudang       = df_gudang
+
+# nah karena data max armada nyusul, jadi mau gak mau ditempel di mari
+# kita ambild ari sheet armada aja ya
+sht         = "Max Armada"
+filename    = "~/NTOP/Persiapan/Raw Data/Routing Explore.xlsx"
+df_tambahan = read_excel(filename,sheet = sht) %>% 
+              janitor::clean_names() %>% 
+              filter(!is.na(cust))
+df_arm_awal = dfs[[2]] %>% select(jenis_mobil) %>% mutate(id)
+
+df_armada
+
 
 save(df_jenis_armada,df_toko,df_order,df_gudang,
      file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/modelling.rda")
