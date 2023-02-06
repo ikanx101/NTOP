@@ -306,7 +306,7 @@ ro_kon_2 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
-n_solusi = 1400
+n_solusi = 2100
 n_sdoa   = 60
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja

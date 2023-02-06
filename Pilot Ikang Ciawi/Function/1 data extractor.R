@@ -157,16 +157,26 @@ df_order        = df_sales_order_ready
 df_gudang       = df_gudang
 
 # nah karena data max armada nyusul, jadi mau gak mau ditempel di mari
-# kita ambild ari sheet armada aja ya
+# kita ambil dari sheet armada aja ya
 sht         = "Max Armada"
 filename    = "~/NTOP/Persiapan/Raw Data/Routing Explore.xlsx"
 df_tambahan = read_excel(filename,sheet = sht) %>% 
               janitor::clean_names() %>% 
-              filter(!is.na(cust))
-df_arm_awal = dfs[[2]] %>% select(jenis_mobil) %>% mutate(armada = 1:7)
+              filter(!is.na(cust)) %>% 
+              rename(jenis_mobil = kapasitas_max_armada)
 
-df_armada
+# kita hanya ambil kodenya di sini
+df_arm_awal = dfs[[2]] %>% select(jenis_mobil) %>% mutate(armada = 1:9)
 
+# kita merge lagi ke sini
+df_toko_armada = merge(df_tambahan,df_arm_awal) %>% select(cust,armada) %>% 
+                 rename(nama_toko  = cust,
+                        max_armada = armada)
+
+# sekarang kita lihat armada yang bisa liwat di df toko
+df_toko$max_armada = NULL
+df_toko            = merge(df_toko,df_toko_armada,all.x = T) %>% 
+                     mutate(max_armada = ifelse(is.na(max_armada),6,max_armada))
 
 save(df_jenis_armada,df_toko,df_order,df_gudang,
      file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/modelling.rda")
