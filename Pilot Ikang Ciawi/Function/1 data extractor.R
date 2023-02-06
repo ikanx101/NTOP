@@ -139,17 +139,8 @@ df_cust_complete_ready =
 # ==============================================================================
 
 
-# ==============================================================================
-# kita save datanya terlebih dahulu
-# untuk keperluan dokumentasi
-save(df_sales_order,
-     df_sales_order_ready,tanggal_minimal,
-     df_armada,df_gudang,
-     df_cust_complete,
-     df_cust_uncomplete,
-     df_cust_complete_ready,
-     file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/dokumentasi.rda")
 
+# ==============================================================================
 # sedangkan yang ini untuk keperluan modelling
 df_jenis_armada = df_armada
 df_toko         = df_cust_complete_ready
@@ -182,3 +173,17 @@ save(df_jenis_armada,df_toko,df_order,df_gudang,
      file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/modelling.rda")
 # ==============================================================================
 
+
+# ==============================================================================
+# kita save datanya
+# untuk keperluan dokumentasi
+
+df_cust_complete_ready = df_toko
+
+save(df_sales_order,
+     df_sales_order_ready,tanggal_minimal,
+     df_armada,df_gudang,
+     df_cust_complete,
+     df_cust_uncomplete,
+     df_cust_complete_ready,
+     file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/dokumentasi.rda")

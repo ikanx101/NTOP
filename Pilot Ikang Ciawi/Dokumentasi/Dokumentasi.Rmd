@@ -137,9 +137,14 @@ Pada _report_ ini, kita akan gunakan data yang sudah dihimpun oleh tim DTA dan D
 
 ## Data Terkait Order Toko
 
+Untuk memudahkan perhitungan model optimisasi, saya akan memilih _sales order_ pada rentang tanggal berikut ini:
+
 ```{r,echo=FALSE}
 df_sales_order_ready %>% 
   select(-sales_order) %>% 
+  mutate(tanggal_kirim_min = tanggal_minimal + tanggal_kirim_min - 1,
+         tanggal_kirim_max = tanggal_minimal + tanggal_kirim_max - 1) %>% 
+  rename(order_kg = order_tonase) %>% 
   DT::datatable(caption = "Data Sales Order",filter = "bottom")
 ```
 
@@ -159,8 +164,20 @@ df_gudang %>%
 
 ## Data Armada
 
+Terkait jenis armada `CONT 20` dan `CONT 40`, saya akan berikan nilai besar untuk parameter yang masih _blank_ pada data, yakni pada:
+
+1. _Cost_ per kilometer,
+1. Kapasitas tonase.
+1. _Max_ titik customer yang bisa dikirim.
+1. _Loading time_.
+
+Terkait ketersediaan, karena ke depannya bisa berpotensi menjadi parameter yang penting maka tetap saya masukkan ke dalam model namun angkanya bisa ditetapkan suatu nilai yang "besar".
+
 ```{r,echo=FALSE}
 df_armada %>% 
+  mutate(jenis_armada = c("Carry","CDE","CDD","CDD Jumbo","FUSO","TRONTON",
+                          "BU","CONT 20","CONT 40")) %>% 
+  relocate(jenis_armada,.before = max_cap_kubikasi) %>% 
   DT::datatable(caption = "Data Armada",filter = "none")
 ```
 
