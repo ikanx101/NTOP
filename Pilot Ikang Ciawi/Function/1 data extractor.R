@@ -162,7 +162,7 @@ filename    = "~/NTOP/Persiapan/Raw Data/Routing Explore.xlsx"
 df_tambahan = read_excel(filename,sheet = sht) %>% 
               janitor::clean_names() %>% 
               filter(!is.na(cust))
-df_arm_awal = dfs[[2]] %>% select(jenis_mobil) %>% mutate(id)
+df_arm_awal = dfs[[2]] %>% select(jenis_mobil) %>% mutate(armada = 1:7)
 
 df_armada
 
