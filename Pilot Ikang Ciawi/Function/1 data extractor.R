@@ -4,6 +4,7 @@ rm(list=ls())
 library(dplyr)
 library(tidyr)
 library(parallel)
+library(readxl)
 
 # ==============================================================================
 # set jumlah cores
