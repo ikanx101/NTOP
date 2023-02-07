@@ -312,7 +312,7 @@ n_sdoa   = 60
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
 # paralel
 library(parallel)
-numCores = 7
+numCores = 10
 
 # list pertama yakni armada
 # bikin dummy

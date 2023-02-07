@@ -8,7 +8,7 @@ library(readxl)
 
 # ==============================================================================
 # set jumlah cores
-numcore = 5
+numcore = 2
 
 # folder data
 path = "~/NTOP/Pilot Ikang Ciawi/Data Mentah"
@@ -91,29 +91,42 @@ df_sales_order =
   df_sales_order %>% 
   mutate(tanggal_order      = as.Date(tanggal_order,"%Y-%m-%d"),
          tanggal_po_expired = as.Date(tanggal_po_expired,"%Y-%m-%d")) %>% 
+  mutate(tanggal_po_expired = ifelse(is.na(tanggal_po_expired),
+                                     tanggal_order,
+                                     tanggal_po_expired),
+         tanggal_po_expired = as.Date(tanggal_po_expired,origin = "1970-01-01")) %>%
   group_by(nama_customer,sales_order) %>% 
   summarise(order_kubikasi    = sum(kubikasi_pemenuhan_m3),
             order_tonase      = sum(berat_pemenuhan_kg),
             tanggal_kirim_min = min(tanggal_order),
-            tanggal_kirim_max = max(tanggal_po_expired)) %>% 
+            tanggal_kirim_max = max(tanggal_po_expired)) %>%
   ungroup() %>% 
   arrange(tanggal_kirim_min) %>% 
   filter(!is.na(order_kubikasi)) %>% 
   filter(!is.na(tanggal_kirim_min)) %>% 
   rename(nama_toko = nama_customer)
 
+# perbedaan 7 februari
+# alih-alih mengambil range tanggal karena hasilnya gak keliatan
+# saya akan ambil per area saja
+area = c("bandung|yogya |griya|yomart")
+
 # kita akan ambil range tanggal tertentu saja
-range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[2:8]
+range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[5:14]
 
 # kita akan ambil range tanggal tersebut saja
 df_sales_order_ready = 
   df_sales_order %>% 
+  filter(grepl(area,nama_toko,ignore.case = T)) %>% 
   filter(tanggal_kirim_min %in% range_tanggal) %>% 
   mutate(tanggal_kirim_max = ifelse(is.na(tanggal_kirim_max),
                                     tanggal_kirim_min,
                                     tanggal_kirim_max)) %>% 
   mutate(tanggal_kirim_min = as.numeric(tanggal_kirim_min),
          tanggal_kirim_max = as.numeric(tanggal_kirim_max))
+
+# ini buat ngecek aja sih
+df_sales_order_ready$nama_toko %>% unique() %>% sort()
 
 # kita ubah tanggal min dan tanggal max agar dalam rentang 1 - 20 sekian
 min_number      = min(df_sales_order_ready$tanggal_kirim_min) - 1
