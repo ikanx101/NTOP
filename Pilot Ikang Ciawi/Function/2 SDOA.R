@@ -118,8 +118,17 @@ buat_rot_mat = function(theta,n){
 # jangan lupa bahwa nanti ada yang harus difilter terlebih dahulu
 
 # generate solusi untuk armada
-armada_generate = function(n_toko,n_armada){
-  sample(n_armada,n_toko,replace = T)
+armada_generate = function(n_toko){
+  vec = rep(1,n_toko) 
+  for(i in 1:n_toko){
+    # kita ambil dulu
+    # di toko tersebut armada terbesar yang boleh liwat itu armada yang mana
+    jenis_armada_sel = sample(df_toko$max_armada[i],1)
+    # baru kita akan cek id_armada yang seharusnya digenerate
+    id_armada_sel = df_jenis_armada %>% filter(armada == jenis_armada_sel) %>% .$id_armada
+    vec[i]        = sample(id_armada_sel,1)
+  }
+  return(vec)
 }
 
 # generate tanggal kirim sesuai dengan data yang ada pada df_order
@@ -220,7 +229,7 @@ obj_func = function(list_1,list_2){
   # tidak ada armada yang kelebihan muatan dalam tonase
   constraint_2 = rep(0,n_pecah)
   # constraint 3
-  # armada yang mengantar tidak boleh melebihi max armada yang memungkinkan
+  # armada yang mengantar tidak boleh melebihi max armada (armada terbesar) yang memungkinkan
   constraint_3 = rep(0,n_pecah)
   # constraint 4
   # rute yang dilalui tidak melebihi max rute
@@ -306,8 +315,8 @@ ro_kon_2 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
-n_solusi = 2100
-n_sdoa   = 60
+n_solusi = 300
+n_sdoa   = 50
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
 # paralel
@@ -317,9 +326,9 @@ numCores = 10
 # list pertama yakni armada
 # bikin dummy
 df_dummy = data.frame(id = 1:n_solusi,
-                      n_toko,
-                      n_armada)
-hasil = mcmapply(armada_generate,df_dummy$n_toko,df_dummy$n_armada,
+                      n_toko)
+
+hasil = mcmapply(armada_generate,df_dummy$n_toko,
                  mc.cores = numCores) 
 # pecah ke list
 solusi_1 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
@@ -335,7 +344,7 @@ for(i in 1:n_solusi){
 }
 
 # buat matriks rotasi
-mat_rotasi = buat_rot_mat(2*pi / 30,n_toko)
+mat_rotasi = buat_rot_mat(2*pi / 20,n_toko)
 
 # initial condition
 f_hit = c()
@@ -387,7 +396,7 @@ save(df_temp_3,file = nama_file_rda)
 
 # ==============================================================================
 
-
+# catatan 8 armada jadinya 66
 
 
 

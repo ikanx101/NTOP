@@ -8,7 +8,7 @@ library(readxl)
 
 # ==============================================================================
 # set jumlah cores
-numcore = 2
+numcore = 5
 
 # folder data
 path = "~/NTOP/Pilot Ikang Ciawi/Data Mentah"
