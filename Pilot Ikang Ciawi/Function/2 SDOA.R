@@ -399,8 +399,7 @@ save(df_temp_3,file = nama_file_rda)
 # catatan 8 armada jadinya 66
 
 
-
-
+# catatan terbaik saat ini 8 dengan hasil 61.96
 
 
 
