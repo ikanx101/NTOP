@@ -30,7 +30,9 @@ Setiap hari, tim DTA membuat rute untuk _transporter_ mendistribusikan produk ja
 
 ## Tujuan
 
-Membuat model optimisasi rute _transporter_ yang meminimalkan _total cost_.
+Membuat model optimisasi rute _transporter_ yang meminimalkan _total cost_, yakni dengan membuat konfigurasi:
+
+> __Order toko mana yang harus dikirim pada tanggal berapa dan menggunakan armada apa.__
 
 ## Ruang Lingkup
 
@@ -177,8 +179,18 @@ Terkait ketersediaan, karena ke depannya bisa berpotensi menjadi parameter yang 
 df_armada %>% 
   mutate(jenis_armada = c("Carry","CDE","CDD","CDD Jumbo","FUSO","TRONTON",
                           "BU","CONT 20","CONT 40")) %>% 
+  rename(max_cap_kg = max_cap_tonase) %>% 
   relocate(jenis_armada,.before = max_cap_kubikasi) %>% 
   DT::datatable(caption = "Data Armada",filter = "none")
+```
+
+
+# HASIL OPTIMISASI
+
+```{r,include=FALSE}
+rm(list=ls())
+
+load("modelling.rda")
 ```
 
 
