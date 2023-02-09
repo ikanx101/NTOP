@@ -1,0 +1,623 @@
+<svg version="1.1" baseProfile="full" width="1704.3" height="1557.0" viewbox="0 0 1704.25 1557" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+	<desc >[&lt;start&gt; start] -&gt; [raw data]
+	[raw data|detail armada|alamat toko|order toko|kapasitas gudang] -&gt; [pre-processing]
+	[pre-processing] -&gt; [define|
+						[existing data] -&gt; [parameter]
+	                    [rules] -&gt; [decision variables]
+	                    [decision variables] -&gt; [armada pengiriman]
+	                    [decision variables] -&gt; [tanggal kirim]
+	                    [hyperparameter model] -&gt; [matriks rotasi]
+	                    [matriks rotasi] -&gt; [banyak rotasi]
+	                    [matriks rotasi] -&gt; [konstraksi rotasi]
+	                    [hyperparameter model] -&gt; [n calon solusi]
+	                    ]
+	[define] -&gt; [computation model tahap I|
+				[generate n random calon solusi] -&gt; [obj function]
+	            [obj function] -&gt; [TSP: lowest cost x jarak]
+	            
+	            [generate n random calon solusi] -&gt; [constraints]
+	            [constraints] -&gt; [tiap tanggal]
+	            [tiap tanggal] -&gt; [&lt;choice&gt; melanggar loading time|gudang?]
+	            [&lt;choice&gt; melanggar loading time] -&gt; T [punishment 1]
+	            [&lt;choice&gt; melanggar loading time] -&gt; F [sukses 1]
+	            
+	            [constraints] -&gt; [tiap armada per tanggal]
+	            [tiap armada per tanggal] -&gt; [&lt;choice&gt; melanggar kapasitas armada?|(kubik dan tonase)]
+	            [&lt;choice&gt; melanggar kapasitas armada?] -&gt; T [punishment 2]
+	            [&lt;choice&gt; melanggar kapasitas armada?] -&gt; F [sukses 2]
+	            
+	            [tiap armada per tanggal] -&gt; [&lt;choice&gt; melanggar armada terbesar?]
+	            [&lt;choice&gt; melanggar armada terbesar?] -&gt; T [punishment 3]
+	            [&lt;choice&gt; melanggar armada terbesar?] -&gt; F [sukses 3]
+	            
+	            [tiap armada per tanggal] -&gt; [&lt;choice&gt; melanggar max titik?]
+	            [&lt;choice&gt; melanggar max titik?] -&gt; T [punishment 4]
+	            [&lt;choice&gt; melanggar max titik?] -&gt; F [sukses 4]
+	            
+	            ]
+	            
+	[computation model tahap I] -&gt; [computation model tahap II|
+								    [select solusi terbaik] -&gt; [rotasi dan kontraksi]
+	                                [rotasi dan kontraksi] -&gt; [kembali ke tahap I|hingga konvergen]
+	                               ]
+	[computation model tahap II] -&gt; [&lt;end&gt; end]
+	                    
+	                    
+	                    
+	                    
+	                    
+	                    </desc>
+	<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="bold" font-style="normal">
+		<g transform="translate(0.5, 0.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+			<g stroke="transparent" fill="transparent">
+				<rect x="0.0" y="0.0" height="1557.0" width="1704.3" stroke="none"></rect>
+			</g>
+			<g transform="translate(8, 8)" fill="#33322E">
+				<g transform="translate(20, 20)" fill="#33322E" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal">
+					<path d="M824.1 30.0 L824.125 50 L824.125 63.333333333333336 L824.1 63.3 " fill="none"></path>
+					<path d="M818.8 56.7 L824.1 63.3 L829.5 56.7 L824.1 70.0 Z"></path>
+					<path d="M824.1 225.0 L824.125 245 L824.125 258.3333333333333 L824.1 258.3 " fill="none"></path>
+					<path d="M818.8 251.7 L824.1 258.3 L829.5 251.7 L824.1 265.0 Z"></path>
+					<path d="M824.1 296.0 L824.125 316 L824.125 329.3333333333333 L824.1 329.3 " fill="none"></path>
+					<path d="M818.8 322.7 L824.1 329.3 L829.5 322.7 L824.1 336.0 Z"></path>
+					<path d="M824.1 596.0 L824.125 616 L824.125 629.3333333333334 L824.1 629.3 " fill="none"></path>
+					<path d="M818.8 622.7 L824.1 629.3 L829.5 622.7 L824.1 636.0 Z"></path>
+					<path d="M824.1 1100.0 L824.125 1120 L824.125 1133.3333333333333 L824.1 1133.3 " fill="none"></path>
+					<path d="M818.8 1126.7 L824.1 1133.3 L829.5 1126.7 L824.1 1140.0 Z"></path>
+					<path d="M824.1 1431.0 L824.125 1451 L824.125 1464.3333333333333 L824.1 1464.3 " fill="none"></path>
+					<path d="M818.8 1457.7 L824.1 1464.3 L829.5 1457.7 L824.1 1471.0 Z"></path>
+					<g data-name="raw data">
+						<g fill="#eee8d5" stroke="#33322E" data-name="raw data">
+							<rect x="746.0" y="70.0" height="155.0" width="157.0" data-name="raw data"></rect>
+							<path d="M746.0 101.0 L903.0 101.0" fill="none" data-name="raw data"></path>
+							<path d="M746.0 132.0 L903.0 132.0" fill="none" data-name="raw data"></path>
+							<path d="M746.0 163.0 L903.0 163.0" fill="none" data-name="raw data"></path>
+							<path d="M746.0 194.0 L903.0 194.0" fill="none" data-name="raw data"></path>
+						</g>
+						<g transform="translate(746, 70)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="raw data">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="raw data">
+								<text x="70.5" y="13.5" stroke="none" text-anchor="middle" data-name="raw data">raw data</text>
+								
+							</g>
+						</g>
+						<g transform="translate(746, 101)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="raw data">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="raw data">
+								<text x="0.0" y="13.5" stroke="none" data-name="raw data">detail armada</text>
+								
+							</g>
+						</g>
+						<g transform="translate(746, 132)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="raw data">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="raw data">
+								<text x="0.0" y="13.5" stroke="none" data-name="raw data">alamat toko</text>
+								
+							</g>
+						</g>
+						<g transform="translate(746, 163)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="raw data">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="raw data">
+								<text x="0.0" y="13.5" stroke="none" data-name="raw data">order toko</text>
+								
+							</g>
+						</g>
+						<g transform="translate(746, 194)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="raw data">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="raw data">
+								<text x="0.0" y="13.5" stroke="none" data-name="raw data">kapasitas gudang</text>
+								
+							</g>
+						</g>
+					</g>
+					<g data-name="define">
+						<g fill="#eee8d5" stroke="#33322E" data-name="define">
+							<rect x="401.0" y="336.0" height="260.0" width="847.3" data-name="define"></rect>
+							<path d="M401.0 367.0 L1248.3 367.0" fill="none" data-name="define"></path>
+						</g>
+						<g transform="translate(401, 336)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="define">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="define">
+								<text x="415.6" y="13.5" stroke="none" text-anchor="middle" data-name="define">define</text>
+								
+							</g>
+						</g>
+						<g transform="translate(401, 367)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="define">
+							<g transform="translate(8, 8)" fill="#33322E" data-name="define">
+								<g transform="translate(20, 20)" fill="#33322E" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="define">
+									<path d="M58.5 31.0 L58.5 51 L58.5 64.33333333333333 L58.5 64.3 " fill="none" data-name="define"></path>
+									<path d="M53.2 57.7 L58.5 64.3 L63.8 57.7 L58.5 71.0 Z" data-name="define"></path>
+									<path d="M226.5 31.0 L226.5 51 L226.5 64.33333333333333 L226.5 64.3 " fill="none" data-name="define"></path>
+									<path d="M221.2 57.7 L226.5 64.3 L231.8 57.7 L226.5 71.0 Z" data-name="define"></path>
+									<path d="M186.5 102.0 L135 122 L135 135.33333333333334 L135.0 135.3 " fill="none" data-name="define"></path>
+									<path d="M129.7 128.7 L135.0 135.3 L140.3 128.7 L135.0 142.0 Z" data-name="define"></path>
+									<path d="M266.5 102.0 L318 122 L318 135.33333333333334 L318.0 135.3 " fill="none" data-name="define"></path>
+									<path d="M312.7 128.7 L318.0 135.3 L323.3 128.7 L318.0 142.0 Z" data-name="define"></path>
+									<path d="M611.3 31.0 L565.25 51 L565.25 64.33333333333333 L565.3 64.3 " fill="none" data-name="define"></path>
+									<path d="M559.9 57.7 L565.3 64.3 L570.6 57.7 L565.3 71.0 Z" data-name="define"></path>
+									<path d="M527.2 102.0 L478 122 L478 135.33333333333334 L478.0 135.3 " fill="none" data-name="define"></path>
+									<path d="M472.7 128.7 L478.0 135.3 L483.3 128.7 L478.0 142.0 Z" data-name="define"></path>
+									<path d="M603.3 102.0 L652.5 122 L652.5 135.33333333333334 L652.5 135.3 " fill="none" data-name="define"></path>
+									<path d="M647.2 128.7 L652.5 135.3 L657.8 128.7 L652.5 142.0 Z" data-name="define"></path>
+									<path d="M682.7 31.0 L728.75 51 L728.75 64.33333333333333 L728.8 64.3 " fill="none" data-name="define"></path>
+									<path d="M723.4 57.7 L728.8 64.3 L734.1 57.7 L728.8 71.0 Z" data-name="define"></path>
+									<g data-name="existing data">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="existing data">
+											<rect x="0.0" y="0.0" height="31.0" width="117.0" data-name="existing data"></rect>
+										</g>
+										<g transform="translate(0, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="existing data">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="existing data">
+												<text x="50.5" y="13.5" stroke="none" text-anchor="middle" data-name="existing data">existing data</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="parameter">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="parameter">
+											<rect x="10.0" y="71.0" height="31.0" width="97.0" data-name="parameter"></rect>
+										</g>
+										<g transform="translate(10, 71)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="parameter">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="parameter">
+												<text x="40.5" y="13.5" stroke="none" text-anchor="middle" data-name="parameter">parameter</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="rules">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="rules">
+											<rect x="199.0" y="0.0" height="31.0" width="55.0" data-name="rules"></rect>
+										</g>
+										<g transform="translate(199, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="rules">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="rules">
+												<text x="19.5" y="13.5" stroke="none" text-anchor="middle" data-name="rules">rules</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="decision variables">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="decision variables">
+											<rect x="147.0" y="71.0" height="31.0" width="159.0" data-name="decision variables"></rect>
+										</g>
+										<g transform="translate(147, 71)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="decision variables">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="decision variables">
+												<text x="71.5" y="13.5" stroke="none" text-anchor="middle" data-name="decision variables">decision variables</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="armada pengiriman">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="armada pengiriman">
+											<rect x="51.0" y="142.0" height="31.0" width="169.0" data-name="armada pengiriman"></rect>
+										</g>
+										<g transform="translate(51, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="armada pengiriman">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="armada pengiriman">
+												<text x="76.5" y="13.5" stroke="none" text-anchor="middle" data-name="armada pengiriman">armada pengiriman</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="tanggal kirim">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="tanggal kirim">
+											<rect x="260.0" y="142.0" height="31.0" width="117.0" data-name="tanggal kirim"></rect>
+										</g>
+										<g transform="translate(260, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="tanggal kirim">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="tanggal kirim">
+												<text x="50.5" y="13.5" stroke="none" text-anchor="middle" data-name="tanggal kirim">tanggal kirim</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="hyperparameter model">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="hyperparameter model">
+											<rect x="550.0" y="0.0" height="31.0" width="195.0" data-name="hyperparameter model"></rect>
+										</g>
+										<g transform="translate(550, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="hyperparameter model">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="hyperparameter model">
+												<text x="89.5" y="13.5" stroke="none" text-anchor="middle" data-name="hyperparameter model">hyperparameter model</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="matriks rotasi">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="matriks rotasi">
+											<rect x="504.0" y="71.0" height="31.0" width="122.0" data-name="matriks rotasi"></rect>
+										</g>
+										<g transform="translate(504, 71)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="matriks rotasi">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="matriks rotasi">
+												<text x="53.0" y="13.5" stroke="none" text-anchor="middle" data-name="matriks rotasi">matriks rotasi</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="banyak rotasi">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="banyak rotasi">
+											<rect x="417.0" y="142.0" height="31.0" width="123.0" data-name="banyak rotasi"></rect>
+										</g>
+										<g transform="translate(417, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="banyak rotasi">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="banyak rotasi">
+												<text x="53.5" y="13.5" stroke="none" text-anchor="middle" data-name="banyak rotasi">banyak rotasi</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="konstraksi rotasi">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="konstraksi rotasi">
+											<rect x="580.0" y="142.0" height="31.0" width="146.0" data-name="konstraksi rotasi"></rect>
+										</g>
+										<g transform="translate(580, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="konstraksi rotasi">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="konstraksi rotasi">
+												<text x="65.0" y="13.5" stroke="none" text-anchor="middle" data-name="konstraksi rotasi">konstraksi rotasi</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="n calon solusi">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="n calon solusi">
+											<rect x="666.0" y="71.0" height="31.0" width="125.0" data-name="n calon solusi"></rect>
+										</g>
+										<g transform="translate(666, 71)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="n calon solusi">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="n calon solusi">
+												<text x="54.5" y="13.5" stroke="none" text-anchor="middle" data-name="n calon solusi">n calon solusi</text>
+												
+											</g>
+										</g>
+									</g>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g data-name="computation model tahap I">
+						<g fill="#eee8d5" stroke="#33322E" data-name="computation model tahap I">
+							<rect x="0.0" y="636.0" height="464.0" width="1648.3" data-name="computation model tahap I"></rect>
+							<path d="M0.0 667.0 L1648.3 667.0" fill="none" data-name="computation model tahap I"></path>
+						</g>
+						<g transform="translate(0, 636)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="computation model tahap I">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="computation model tahap I">
+								<text x="816.1" y="13.5" stroke="none" text-anchor="middle" data-name="computation model tahap I">computation model tahap I</text>
+								
+							</g>
+						</g>
+						<g transform="translate(0, 667)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="computation model tahap I">
+							<g transform="translate(8, 8)" fill="#33322E" data-name="computation model tahap I">
+								<g transform="translate(20, 20)" fill="#33322E" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="computation model tahap I">
+									<path d="M466.9 25.0 L102 51 L102 64.33333333333333 L102.0 64.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M96.7 57.7 L102.0 64.3 L107.3 57.7 L102.0 71.0 Z" data-name="computation model tahap I"></path>
+									<path d="M102.0 102.0 L102 122 L102 135.33333333333334 L102.0 135.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M96.7 128.7 L102.0 135.3 L107.3 128.7 L102.0 142.0 Z" data-name="computation model tahap I"></path>
+									<path d="M642.8 31.0 L698.125 51 L698.125 64.33333333333333 L698.1 64.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M692.8 57.7 L698.1 64.3 L703.5 57.7 L698.1 71.0 Z" data-name="computation model tahap I"></path>
+									<path d="M646.6 91.1 L298.5 122 L298.5 135.33333333333334 L298.5 135.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M293.2 128.7 L298.5 135.3 L303.8 128.7 L298.5 142.0 Z" data-name="computation model tahap I"></path>
+									<path d="M298.5 173.0 L298.5 193 L298.5 206.33333333333334 L298.5 206.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M293.2 199.7 L298.5 206.3 L303.8 199.7 L298.5 213.0 Z" data-name="computation model tahap I"></path>
+									<text x="208.0" y="338.0" stroke="none" data-name="computation model tahap I">T</text>
+									<path d="M247.8 306.0 L226 326 L226 339.3333333333333 L226.0 339.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M220.7 332.7 L226.0 339.3 L231.3 332.7 L226.0 346.0 Z" data-name="computation model tahap I"></path>
+									<text x="425.4" y="338.0" stroke="none" data-name="computation model tahap I">F</text>
+									<path d="M381.6 306.0 L417.375 326 L417.375 339.3333333333333 L417.4 339.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M412.0 332.7 L417.4 339.3 L422.7 332.7 L417.4 346.0 Z" data-name="computation model tahap I"></path>
+									<path d="M749.6 91.1 L1097.75 122 L1097.75 135.33333333333334 L1097.8 135.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M1092.4 128.7 L1097.8 135.3 L1103.1 128.7 L1097.8 142.0 Z" data-name="computation model tahap I"></path>
+									<path d="M995.3 166.2 L681.25 193 L681.25 206.33333333333334 L681.3 206.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M675.9 199.7 L681.3 206.3 L686.6 199.7 L681.3 213.0 Z" data-name="computation model tahap I"></path>
+									<text x="544.4" y="338.0" stroke="none" data-name="computation model tahap I">T</text>
+									<path d="M598.1 306.0 L562.375 326 L562.375 339.3333333333333 L562.4 339.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M557.0 332.7 L562.4 339.3 L567.7 332.7 L562.4 346.0 Z" data-name="computation model tahap I"></path>
+									<text x="825.0" y="338.0" stroke="none" data-name="computation model tahap I">F</text>
+									<path d="M776.2 306.0 L817 326 L817 339.3333333333333 L817.0 339.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M811.7 332.7 L817.0 339.3 L822.3 332.7 L817.0 346.0 Z" data-name="computation model tahap I"></path>
+									<path d="M1097.8 173.0 L1097.75 193 L1097.75 229.58333333333334 L1097.8 229.6 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M1092.4 222.9 L1097.8 229.6 L1103.1 222.9 L1097.8 236.3 Z" data-name="computation model tahap I"></path>
+									<text x="944.0" y="338.0" stroke="none" data-name="computation model tahap I">T</text>
+									<path d="M1050.3 282.8 L962 326 L962 339.3333333333333 L962.0 339.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M956.7 332.7 L962.0 339.3 L967.3 332.7 L962.0 346.0 Z" data-name="computation model tahap I"></path>
+									<text x="1213.0" y="338.0" stroke="none" data-name="computation model tahap I">F</text>
+									<path d="M1135.2 282.8 L1205 326 L1205 339.3333333333333 L1205.0 339.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M1199.7 332.7 L1205.0 339.3 L1210.3 332.7 L1205.0 346.0 Z" data-name="computation model tahap I"></path>
+									<path d="M1200.3 167.6 L1457.25 193 L1457.25 229.58333333333334 L1457.3 229.6 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M1451.9 222.9 L1457.3 229.6 L1462.6 222.9 L1457.3 236.3 Z" data-name="computation model tahap I"></path>
+									<text x="1332.0" y="338.0" stroke="none" data-name="computation model tahap I">T</text>
+									<path d="M1419.8 282.8 L1350 326 L1350 339.3333333333333 L1350.0 339.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M1344.7 332.7 L1350.0 339.3 L1355.3 332.7 L1350.0 346.0 Z" data-name="computation model tahap I"></path>
+									<text x="1537.8" y="338.0" stroke="none" data-name="computation model tahap I">F</text>
+									<path d="M1482.6 282.8 L1529.75 326 L1529.75 339.3333333333333 L1529.8 339.3 " fill="none" data-name="computation model tahap I"></path>
+									<path d="M1524.4 332.7 L1529.8 339.3 L1535.1 332.7 L1529.8 346.0 Z" data-name="computation model tahap I"></path>
+									<g data-name="melanggar loading time">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="melanggar loading time">
+											<path d="M298.5 213.0 L449.5 259.5 L298.5 306.0 L148.0 259.5 Z" data-name="melanggar loading time"></path>
+											<path d="M449.5 259.5 L148.0 259.5" fill="none" data-name="melanggar loading time"></path>
+										</g>
+										<g transform="translate(198.25, 228.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="melanggar loading time">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="melanggar loading time">
+												<text x="92.5" y="13.5" stroke="none" text-anchor="middle" data-name="melanggar loading time">melanggar loading time</text>
+												
+											</g>
+										</g>
+										<g transform="translate(198.25, 259.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="melanggar loading time">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="melanggar loading time">
+												<text x="92.5" y="13.5" stroke="none" text-anchor="middle" data-name="melanggar loading time">gudang?</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="melanggar kapasitas armada?">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="melanggar kapasitas armada?">
+											<path d="M681.3 213.0 L873.0 259.5 L681.3 306.0 L489.0 259.5 Z" data-name="melanggar kapasitas armada?"></path>
+											<path d="M873.0 259.5 L489.0 259.5" fill="none" data-name="melanggar kapasitas armada?"></path>
+										</g>
+										<g transform="translate(553, 228.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="melanggar kapasitas armada?">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="melanggar kapasitas armada?">
+												<text x="120.0" y="13.5" stroke="none" text-anchor="middle" data-name="melanggar kapasitas armada?">melanggar kapasitas armada?</text>
+												
+											</g>
+										</g>
+										<g transform="translate(553, 259.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="melanggar kapasitas armada?">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="melanggar kapasitas armada?">
+												<text x="120.0" y="13.5" stroke="none" text-anchor="middle" data-name="melanggar kapasitas armada?">(kubik dan tonase)</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="generate n random calon solusi">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="generate n random calon solusi">
+											<rect x="467.0" y="0.0" height="31.0" width="266.0" data-name="generate n random calon solusi"></rect>
+										</g>
+										<g transform="translate(467, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="generate n random calon solusi">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="generate n random calon solusi">
+												<text x="125.0" y="13.5" stroke="none" text-anchor="middle" data-name="generate n random calon solusi">generate n random calon solusi</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="obj function">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="obj function">
+											<rect x="48.0" y="71.0" height="31.0" width="108.0" data-name="obj function"></rect>
+										</g>
+										<g transform="translate(48, 71)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="obj function">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="obj function">
+												<text x="46.0" y="13.5" stroke="none" text-anchor="middle" data-name="obj function">obj function</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="TSP: lowest cost x jarak">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="TSP: lowest cost x jarak">
+											<rect x="0.0" y="142.0" height="31.0" width="204.0" data-name="TSP: lowest cost x jarak"></rect>
+										</g>
+										<g transform="translate(0, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="TSP: lowest cost x jarak">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TSP: lowest cost x jarak">
+												<text x="94.0" y="13.5" stroke="none" text-anchor="middle" data-name="TSP: lowest cost x jarak">TSP: lowest cost x jarak</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="constraints">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="constraints">
+											<rect x="647.0" y="71.0" height="31.0" width="103.0" data-name="constraints"></rect>
+										</g>
+										<g transform="translate(647, 71)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="constraints">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="constraints">
+												<text x="43.5" y="13.5" stroke="none" text-anchor="middle" data-name="constraints">constraints</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="tiap tanggal">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="tiap tanggal">
+											<rect x="244.0" y="142.0" height="31.0" width="109.0" data-name="tiap tanggal"></rect>
+										</g>
+										<g transform="translate(244, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="tiap tanggal">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="tiap tanggal">
+												<text x="46.5" y="13.5" stroke="none" text-anchor="middle" data-name="tiap tanggal">tiap tanggal</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="punishment 1">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="punishment 1">
+											<rect x="165.0" y="346.0" height="31.0" width="123.0" data-name="punishment 1"></rect>
+										</g>
+										<g transform="translate(165, 346)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="punishment 1">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="punishment 1">
+												<text x="53.5" y="13.5" stroke="none" text-anchor="middle" data-name="punishment 1">punishment 1</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="sukses 1">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="sukses 1">
+											<rect x="374.0" y="346.0" height="31.0" width="87.0" data-name="sukses 1"></rect>
+										</g>
+										<g transform="translate(374, 346)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="sukses 1">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="sukses 1">
+												<text x="35.5" y="13.5" stroke="none" text-anchor="middle" data-name="sukses 1">sukses 1</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="tiap armada per tanggal">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="tiap armada per tanggal">
+											<rect x="995.0" y="142.0" height="31.0" width="205.0" data-name="tiap armada per tanggal"></rect>
+										</g>
+										<g transform="translate(995, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="tiap armada per tanggal">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="tiap armada per tanggal">
+												<text x="94.5" y="13.5" stroke="none" text-anchor="middle" data-name="tiap armada per tanggal">tiap armada per tanggal</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="punishment 2">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="punishment 2">
+											<rect x="501.0" y="346.0" height="31.0" width="123.0" data-name="punishment 2"></rect>
+										</g>
+										<g transform="translate(501, 346)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="punishment 2">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="punishment 2">
+												<text x="53.5" y="13.5" stroke="none" text-anchor="middle" data-name="punishment 2">punishment 2</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="sukses 2">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="sukses 2">
+											<rect x="774.0" y="346.0" height="31.0" width="87.0" data-name="sukses 2"></rect>
+										</g>
+										<g transform="translate(774, 346)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="sukses 2">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="sukses 2">
+												<text x="35.5" y="13.5" stroke="none" text-anchor="middle" data-name="sukses 2">sukses 2</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="melanggar armada terbesar?">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="melanggar armada terbesar?">
+											<path d="M1097.8 236.0 L1282.0 259.5 L1097.8 282.5 L913.0 259.5 Z" data-name="melanggar armada terbesar?"></path>
+										</g>
+										<g transform="translate(974.5, 243.75)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="melanggar armada terbesar?">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="melanggar armada terbesar?">
+												<text x="115.0" y="13.5" stroke="none" text-anchor="middle" data-name="melanggar armada terbesar?">melanggar armada terbesar?</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="punishment 3">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="punishment 3">
+											<rect x="901.0" y="346.0" height="31.0" width="123.0" data-name="punishment 3"></rect>
+										</g>
+										<g transform="translate(901, 346)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="punishment 3">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="punishment 3">
+												<text x="53.5" y="13.5" stroke="none" text-anchor="middle" data-name="punishment 3">punishment 3</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="sukses 3">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="sukses 3">
+											<rect x="1162.0" y="346.0" height="31.0" width="87.0" data-name="sukses 3"></rect>
+										</g>
+										<g transform="translate(1162, 346)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="sukses 3">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="sukses 3">
+												<text x="35.5" y="13.5" stroke="none" text-anchor="middle" data-name="sukses 3">sukses 3</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="melanggar max titik?">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="melanggar max titik?">
+											<path d="M1457.3 236.0 L1592.0 259.5 L1457.3 282.5 L1322.0 259.5 Z" data-name="melanggar max titik?"></path>
+										</g>
+										<g transform="translate(1367, 243.75)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="melanggar max titik?">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="melanggar max titik?">
+												<text x="82.0" y="13.5" stroke="none" text-anchor="middle" data-name="melanggar max titik?">melanggar max titik?</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="punishment 4">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="punishment 4">
+											<rect x="1289.0" y="346.0" height="31.0" width="123.0" data-name="punishment 4"></rect>
+										</g>
+										<g transform="translate(1289, 346)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="punishment 4">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="punishment 4">
+												<text x="53.5" y="13.5" stroke="none" text-anchor="middle" data-name="punishment 4">punishment 4</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="sukses 4">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="sukses 4">
+											<rect x="1486.0" y="346.0" height="31.0" width="87.0" data-name="sukses 4"></rect>
+										</g>
+										<g transform="translate(1486, 346)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="sukses 4">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="sukses 4">
+												<text x="35.5" y="13.5" stroke="none" text-anchor="middle" data-name="sukses 4">sukses 4</text>
+												
+											</g>
+										</g>
+									</g>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g data-name="computation model tahap II">
+						<g fill="#eee8d5" stroke="#33322E" data-name="computation model tahap II">
+							<rect x="709.0" y="1140.0" height="291.0" width="231.0" data-name="computation model tahap II"></rect>
+							<path d="M709.0 1171.0 L940.0 1171.0" fill="none" data-name="computation model tahap II"></path>
+						</g>
+						<g transform="translate(709, 1140)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="computation model tahap II">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="computation model tahap II">
+								<text x="107.5" y="13.5" stroke="none" text-anchor="middle" data-name="computation model tahap II">computation model tahap II</text>
+								
+							</g>
+						</g>
+						<g transform="translate(709, 1171)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="computation model tahap II">
+							<g transform="translate(8, 8)" fill="#33322E" data-name="computation model tahap II">
+								<g transform="translate(20, 20)" fill="#33322E" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="computation model tahap II">
+									<path d="M86.5 31.0 L86.5 51 L86.5 64.33333333333333 L86.5 64.3 " fill="none" data-name="computation model tahap II"></path>
+									<path d="M81.2 57.7 L86.5 64.3 L91.8 57.7 L86.5 71.0 Z" data-name="computation model tahap II"></path>
+									<path d="M86.5 102.0 L86.5 122 L86.5 135.33333333333334 L86.5 135.3 " fill="none" data-name="computation model tahap II"></path>
+									<path d="M81.2 128.7 L86.5 135.3 L91.8 128.7 L86.5 142.0 Z" data-name="computation model tahap II"></path>
+									<g data-name="kembali ke tahap I">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="kembali ke tahap I">
+											<rect x="6.0" y="142.0" height="62.0" width="161.0" data-name="kembali ke tahap I"></rect>
+											<path d="M6.0 173.0 L167.0 173.0" fill="none" data-name="kembali ke tahap I"></path>
+										</g>
+										<g transform="translate(6, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="kembali ke tahap I">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="kembali ke tahap I">
+												<text x="72.5" y="13.5" stroke="none" text-anchor="middle" data-name="kembali ke tahap I">kembali ke tahap I</text>
+												
+											</g>
+										</g>
+										<g transform="translate(6, 173)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="kembali ke tahap I">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="kembali ke tahap I">
+												<text x="0.0" y="13.5" stroke="none" data-name="kembali ke tahap I">hingga konvergen</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="select solusi terbaik">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="select solusi terbaik">
+											<rect x="0.0" y="0.0" height="31.0" width="173.0" data-name="select solusi terbaik"></rect>
+										</g>
+										<g transform="translate(0, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="select solusi terbaik">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="select solusi terbaik">
+												<text x="78.5" y="13.5" stroke="none" text-anchor="middle" data-name="select solusi terbaik">select solusi terbaik</text>
+												
+											</g>
+										</g>
+									</g>
+									<g data-name="rotasi dan kontraksi">
+										<g fill="#fdf6e3" stroke="#33322E" data-name="rotasi dan kontraksi">
+											<rect x="1.0" y="71.0" height="31.0" width="172.0" data-name="rotasi dan kontraksi"></rect>
+										</g>
+										<g transform="translate(1, 71)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="rotasi dan kontraksi">
+											<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="rotasi dan kontraksi">
+												<text x="78.0" y="13.5" stroke="none" text-anchor="middle" data-name="rotasi dan kontraksi">rotasi dan kontraksi</text>
+												
+											</g>
+										</g>
+									</g>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g data-name="start">
+						<g fill="#33322E" stroke="#33322E" data-name="start">
+							<circle r="12.0" cx="824.1" cy="15.0" stroke="none" data-name="start"></circle>
+						</g>
+					</g>
+					<g data-name="pre-processing">
+						<g fill="#eee8d5" stroke="#33322E" data-name="pre-processing">
+							<rect x="757.0" y="265.0" height="31.0" width="135.0" data-name="pre-processing"></rect>
+						</g>
+						<g transform="translate(757, 265)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="pre-processing">
+							<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="pre-processing">
+								<text x="59.5" y="13.5" stroke="none" text-anchor="middle" data-name="pre-processing">pre-processing</text>
+								
+							</g>
+						</g>
+					</g>
+					<g data-name="end">
+						<g fill="#33322E" stroke="#33322E" data-name="end">
+							<circle r="10.0" cx="824.1" cy="1486.0" data-name="end"></circle>
+							<circle r="6.0" cx="824.1" cy="1486.0" stroke="none" data-name="end"></circle>
+						</g>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>

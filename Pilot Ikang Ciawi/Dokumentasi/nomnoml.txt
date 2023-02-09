@@ -1,0 +1,42 @@
+[<start> start] -> [raw data]
+[raw data|detail armada|alamat toko|order toko|kapasitas gudang] -> [pre-processing]
+[pre-processing] -> [define|
+					[existing data] -> [parameter]
+                    [rules] -> [decision variables]
+                    [decision variables] -> [armada pengiriman]
+                    [decision variables] -> [tanggal kirim]
+                    [hyperparameter model] -> [matriks rotasi]
+                    [matriks rotasi] -> [banyak rotasi]
+                    [matriks rotasi] -> [konstraksi rotasi]
+                    [hyperparameter model] -> [n calon solusi]
+                    ]
+[define] -> [computation model tahap I|
+			[generate n random calon solusi] -> [obj function]
+            [obj function] -> [TSP: lowest cost x jarak]
+            
+            [generate n random calon solusi] -> [constraints]
+            [constraints] -> [tiap tanggal]
+            [tiap tanggal] -> [<choice> melanggar loading time|gudang?]
+            [<choice> melanggar loading time] -> T [punishment 1]
+            [<choice> melanggar loading time] -> F [sukses 1]
+            
+            [constraints] -> [tiap armada per tanggal]
+            [tiap armada per tanggal] -> [<choice> melanggar kapasitas armada?|(kubik dan tonase)]
+            [<choice> melanggar kapasitas armada?] -> T [punishment 2]
+            [<choice> melanggar kapasitas armada?] -> F [sukses 2]
+            
+            [tiap armada per tanggal] -> [<choice> melanggar armada terbesar?]
+            [<choice> melanggar armada terbesar?] -> T [punishment 3]
+            [<choice> melanggar armada terbesar?] -> F [sukses 3]
+            
+            [tiap armada per tanggal] -> [<choice> melanggar max titik?]
+            [<choice> melanggar max titik?] -> T [punishment 4]
+            [<choice> melanggar max titik?] -> F [sukses 4]
+            
+            ]
+            
+[computation model tahap I] -> [computation model tahap II|
+							    [select solusi terbaik] -> [rotasi dan kontraksi]
+                                [rotasi dan kontraksi] -> [kembali ke tahap I|hingga konvergen]
+                               ]
+[computation model tahap II] -> [<end> end]
