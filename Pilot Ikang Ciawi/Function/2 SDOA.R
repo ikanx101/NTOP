@@ -22,7 +22,6 @@ load("~/NTOP/Pilot Ikang Ciawi/Dokumentasi/modelling.rda")
 # ==============================================================================
 # apakah mau Ciawi atau Cibitung terlebih dahulu?
 target_gudang = "ciawi"
-nama_file_rda = paste0(target_gudang," done ver baru II.rda")
 # ==============================================================================
 
 
@@ -315,7 +314,7 @@ ro_kon_2 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
-n_solusi = 300
+n_solusi = 500
 n_sdoa   = 50
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
@@ -391,6 +390,7 @@ df_temp_3$id_armada     = round(as.vector(center_1),0) # kita rounding dulu ya
 df_temp_3$tanggal_kirim = round(as.vector(center_2),0) # kita rounding dulu ya
 df_temp_3 = merge(df_temp_3,df_jenis_armada)
 
+nama_file_rda = paste0(target_gudang," done ver baru IV.rda")
 
 save(df_temp_3,file = nama_file_rda)
 
@@ -401,6 +401,7 @@ save(df_temp_3,file = nama_file_rda)
 
 # catatan terbaik saat ini 8 dengan hasil 61.96
 # ciawi done ver baru I.rda hasilnya 57
+# ciawi versi 4 hasilnya 54
 
 nama_file_rda
 
