@@ -8,7 +8,7 @@ library(readxl)
 
 # ==============================================================================
 # set jumlah cores
-numcore = 5
+numcore = 10
 
 # folder data
 path = "~/NTOP/Pilot Ikang Ciawi/Data Mentah"
@@ -50,7 +50,7 @@ df_cust_complete = df_cust_complete %>% filter(!is.na(lat))
 df_armada = 
   df_armada %>% 
   mutate(armada           = 1:nrow(df_armada),
-         tersedia         = 8) %>% 
+         tersedia         = c(5,5,5,4,4,4,3,3,3)) %>% 
   rename(max_cap_kubikasi = kubikasi_max,
          max_cap_tonase   = tonase_max_ton,
          cost_per_km      = index_biaya_per_km_per_mobil,

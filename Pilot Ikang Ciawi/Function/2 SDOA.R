@@ -22,7 +22,7 @@ load("~/NTOP/Pilot Ikang Ciawi/Dokumentasi/modelling.rda")
 # ==============================================================================
 # apakah mau Ciawi atau Cibitung terlebih dahulu?
 target_gudang = "ciawi"
-nama_file_rda = paste0(target_gudang," done.rda")
+nama_file_rda = paste0(target_gudang," done ver baru II.rda")
 # ==============================================================================
 
 
@@ -400,8 +400,9 @@ save(df_temp_3,file = nama_file_rda)
 
 
 # catatan terbaik saat ini 8 dengan hasil 61.96
+# ciawi done ver baru I.rda hasilnya 57
 
-
+nama_file_rda
 
 
 
