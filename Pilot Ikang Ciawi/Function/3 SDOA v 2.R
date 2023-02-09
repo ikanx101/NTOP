@@ -39,25 +39,10 @@ df_order = temporary %>% select(colnames(df_order))
 
 # ==============================================================================
 # kita akan modifikasi si database jenis armada
-# yakni dengan mereplikasi baris-baris tergantung dari ketersediaan armada
-temp = 
-  df_jenis_armada %>% 
-  group_split(armada)
-
-n_temp = length(temp)
-df_hasil = data.frame()
-for(i in 1:n_temp){
-  df_temp = temp[[i]]
-  for(k in 1:df_temp$tersedia){
-    df_hasil = rbind(df_temp,df_hasil)
-  }
-}
-
-# kita kembalikan lagi ke sini
 df_jenis_armada = 
-  df_hasil %>% 
+  df_jenis_armada %>% 
   arrange(armada) %>% 
-  mutate(id_armada = 1:nrow(df_hasil)) %>% 
+  mutate(id_armada = 1:nrow(df_jenis_armada)) %>% 
   select(-tersedia)
 
 # lalu kita akan ambil data mana yang harus dikerjakan terlebih dahulu
@@ -66,6 +51,9 @@ df_jenis_armada =
 df_toko   = df_toko %>% filter(supplied == target_gudang)
 df_order  = df_order %>% filter(nama_toko %in% df_toko$nama_toko)
 df_gudang = df_gudang %>% filter(site == target_gudang) %>% .$week_day_hour
+
+# kita ambil tanggal max pengiriman
+max_tanggal_kirim = df_order$tanggal_kirim_max %>% max()
 # ==============================================================================
 
 
@@ -196,21 +184,22 @@ tsp_hitung = function(new){
 
 # ==============================================================================
 # kita akan buat function untuk objective function
-obj_func = function(list_1,list_2){
+obj_func = function(list_1,list_2,list_3){
   # kita buat dulu ke data frame untuk mengecek semua informasi yang ada
   df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
   df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
   df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
-  df_temp_3$id_armada     = round(as.vector(list_1),0) # kita rounding dulu ya
-  df_temp_3$tanggal_kirim = round(as.vector(list_2),0) # kita rounding dulu ya
-  df_temp_3 = merge(df_temp_3,df_jenis_armada)
+  df_temp_3$id_armada        = round(as.vector(list_1),0) # kita rounding dulu ya
+  df_temp_3$tanggal_kirim    = round(as.vector(list_2),0) # kita rounding dulu ya
+  df_temp_3$armada_ke        = round(as.vector(list_3),0)
+  df_temp_3                  = merge(df_temp_3,df_jenis_armada)
   
   # konstanta penalti
   beta = 10^5
   alpa = 100
   
   # kita pecah dulu berdasarkan armada dan tanggal
-  pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim)
+  pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim,armada_ke)
   n_pecah    = length(pecah)
   
   # kita hitung dulu cost per jarak
@@ -286,6 +275,7 @@ obj_func = function(list_1,list_2){
 
 
 # ==============================================================================
+# jenis mobil
 # fungsi untuk rotasi dan kontraksi
 ro_kon_1 = function(list,center){
   Xt_1 = list
@@ -297,6 +287,7 @@ ro_kon_1 = function(list,center){
   return(X1)
 }
 
+# tanggal kirim
 # fungsi untuk rotasi dan kontraksi
 ro_kon_2 = function(list,center){
   Xt_2 = list
@@ -304,7 +295,19 @@ ro_kon_2 = function(list,center){
   X2 = mat_rotasi %*% (Xt_2 - center_2)
   X2 = center_2 + (.7 * X2)
   X2 = ifelse(X2 <= 1,1,X2)
-  X2 = ifelse(X2 >= 7,7,X2)
+  X2 = ifelse(X2 >= max_tanggal_kirim,max_tanggal_kirim,X2) # seandainya lebih dari max hari pengiriman
+  return(X2)
+}
+
+# banyak mobil
+# fungsi untuk rotasi dan kontraksi
+ro_kon_3 = function(list,center){
+  Xt_2 = list
+  # kita rotasikan dan konstraksikan
+  X2 = mat_rotasi %*% (Xt_2 - center_2)
+  X2 = center_2 + (.7 * X2)
+  X2 = ifelse(X2 <= 1,1,X2)
+  X2 = ifelse(X2 >= 4,4,X2) # seandainya lebih dari 4 mobil maka harus diturunkan
   return(X2)
 }
 # ==============================================================================
@@ -315,8 +318,8 @@ ro_kon_2 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
-n_solusi = 900
-n_sdoa   = 50
+n_solusi = 550
+n_sdoa   = 20
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
 # paralel
@@ -332,6 +335,15 @@ hasil = mcmapply(armada_generate,df_dummy$n_toko,
                  mc.cores = numCores) 
 # pecah ke list
 solusi_1 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
+
+# kita bikin solusi_3 yakni mobil ke berapa
+gener_solusi_3 = function(dummy){sample(4,82,replace = T)} # 4 banyak mobil
+hasil = mcmapply(gener_solusi_3,
+                 df_dummy$n_toko,
+                 mc.cores = numCores)
+
+# pecah ke list
+solusi_3 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
 
 
 # list pertama yakni tanggal
@@ -350,7 +362,7 @@ mat_rotasi = buat_rot_mat(2*pi / 20,n_toko)
 f_hit = c()
 
 # kita hitung dulu initial function objective
-f_hit = mcmapply(obj_func,solusi_1,solusi_2,mc.cores = numCores)
+f_hit = mcmapply(obj_func,solusi_1,solusi_2,solusi_3,mc.cores = numCores)
 
 
 # kita mulai perhitungannya di sini
@@ -361,6 +373,7 @@ for(iter in 1:n_sdoa){
   # kita jadikan center of gravity
   center_1 = solusi_1[[n_bhole]]
   center_2 = solusi_2[[n_bhole]]
+  center_3 = solusi_3[[n_bhole]]
   
   solusi_1_new = mcmapply(ro_kon_1,solusi_1,center_1)
   solusi_1     = lapply(seq_len(ncol(solusi_1_new)), function(i) solusi_1_new[,i])
@@ -368,8 +381,11 @@ for(iter in 1:n_sdoa){
   solusi_2_new = mcmapply(ro_kon_2,solusi_2,center_2)
   solusi_2     = lapply(seq_len(ncol(solusi_2_new)), function(i) solusi_2_new[,i])
   
+  solusi_3_new = mcmapply(ro_kon_3,solusi_3,center_3)
+  solusi_3     = lapply(seq_len(ncol(solusi_3_new)), function(i) solusi_3_new[,i])
+  
   # kita hitung kembali function objective
-  f_hit = mcmapply(obj_func,solusi_1,solusi_2,mc.cores = numCores)
+  f_hit = mcmapply(obj_func,solusi_1,solusi_2,solusi_3,mc.cores = numCores)
   
   pesan = paste0("Iterasi ke: ",iter," hasilnya: ",min(f_hit))
   print(pesan)
@@ -382,16 +398,18 @@ n_bhole = which.min(f_hit)
 # solusinya
 center_1 = solusi_1[[n_bhole]]
 center_2 = solusi_2[[n_bhole]]
+center_3 = solusi_3[[n_bhole]]
 
 # kita buat dulu ke data frame untuk mengecek semua informasi yang ada
 df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
 df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
 df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
-df_temp_3$id_armada     = round(as.vector(center_1),0) # kita rounding dulu ya
-df_temp_3$tanggal_kirim = round(as.vector(center_2),0) # kita rounding dulu ya
-df_temp_3 = merge(df_temp_3,df_jenis_armada)
+df_temp_3$id_armada        = round(as.vector(center_1),0) # kita rounding dulu ya
+df_temp_3$tanggal_kirim    = round(as.vector(center_2),0) # kita rounding dulu ya
+df_temp_3$armada_ke        = round(as.vector(center_3),0)
+df_temp_3                  = merge(df_temp_3,df_jenis_armada)
 
-nama_file_rda = paste0(target_gudang," done ver baru VII.rda")
+nama_file_rda = paste0(target_gudang," done ver baru XI.rda")
 
 save(df_temp_3,file = nama_file_rda)
 
