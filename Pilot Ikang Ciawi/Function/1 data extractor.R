@@ -50,7 +50,8 @@ df_cust_complete = df_cust_complete %>% filter(!is.na(lat))
 df_armada = 
   df_armada %>% 
   mutate(armada           = 1:nrow(df_armada),
-         tersedia         = 8) %>% 
+         tersedia         = 7
+         ) %>% 
   rename(max_cap_kubikasi = kubikasi_max,
          max_cap_tonase   = tonase_max_ton,
          cost_per_km      = index_biaya_per_km_per_mobil,

@@ -254,8 +254,8 @@ obj_func = function(list_1,list_2){
     constraint_3[i]  = beta * c_3^2
     
     # constraint 4
-    c_4              = nrow(temp_1)                      # ini kita paksa agar terisi
-    c_4              = ifelse(c_4 >= 3 & c_4 <=5,0,beta) # 2-5 titik
+    c_4              = nrow(temp_1) - 5                  # ini kita paksa agar terisi
+    c_4              = max(c_4,0)                        # 2-5 titik
     constraint_4[i]  = alpa * c_4^2
     
   }
@@ -315,7 +315,7 @@ ro_kon_2 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
-n_solusi = 100
+n_solusi = 900
 n_sdoa   = 50
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
@@ -391,7 +391,7 @@ df_temp_3$id_armada     = round(as.vector(center_1),0) # kita rounding dulu ya
 df_temp_3$tanggal_kirim = round(as.vector(center_2),0) # kita rounding dulu ya
 df_temp_3 = merge(df_temp_3,df_jenis_armada)
 
-nama_file_rda = paste0(target_gudang," done ver baru V.rda")
+nama_file_rda = paste0(target_gudang," done ver baru VI.rda")
 
 save(df_temp_3,file = nama_file_rda)
 
