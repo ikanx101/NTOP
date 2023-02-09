@@ -224,7 +224,7 @@ Fungsi objektif pada model ini adalah:
 ```{r,include=FALSE}
 rm(list=ls())
 
-load("ciawi done.rda")
+load("ciawi done ver baru V.rda")
 
 # jangan lupa ganti tanggal
 tanggal_minimal = as.Date(as.character("2022-11-29"),
@@ -238,7 +238,7 @@ list_jadwal =
   group_split(tanggal_kirim)
 
 # kita akan buat contoh dulu
-# temp = list_jadwal[[1]]
+# temp = list_jadwal[[3]]
 
 # function untuk print datanya
 printing = function(temp){
