@@ -207,6 +207,7 @@ obj_func = function(list_1,list_2){
   
   # konstanta penalti
   beta = 10^5
+  alpa = 100
   
   # kita pecah dulu berdasarkan armada dan tanggal
   pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim)
@@ -254,8 +255,8 @@ obj_func = function(list_1,list_2){
     
     # constraint 4
     c_4              = nrow(temp_1)                      # ini kita paksa agar terisi
-    c_4              = ifelse(c_4 >= 2 & c_4 <=5,0,beta) # 2-5 titik
-    constraint_4[i]  = beta * c_4^2
+    c_4              = ifelse(c_4 >= 3 & c_4 <=5,0,beta) # 2-5 titik
+    constraint_4[i]  = alpa * c_4^2
     
   }
   
@@ -314,7 +315,7 @@ ro_kon_2 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = nrow(df_jenis_armada)
-n_solusi = 800
+n_solusi = 100
 n_sdoa   = 50
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
