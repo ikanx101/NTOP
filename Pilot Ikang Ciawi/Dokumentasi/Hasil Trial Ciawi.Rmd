@@ -314,5 +314,23 @@ temp = list_jadwal[[i]]
 printing(temp)
 ```
 
+# ANALISA DAN DISKUSI
+
+## Keterbatasan Titik Pengiriman
+
+Jika kita perhatikan data detail jenis armada yang diberikan, terlihat bahwa __semua jenis armada__ memiliki keterbatasan:
+
+> __Hanya bisa mengantarkan order ke lima titik pengantaran saja__.
+
+Sedangkan _sales order_ (baik dalam kubikasi dan tonase) tidak pernah ada yang bernilai besar. Akibatnya keunggulan armada-armada besar justru tidak dapat diutilisasi dengan baik. Oleh karena itu __tidak ada alasan kita perlu menggunakan armada yang lebih besar dari CARRY dan CDE__. Pada model sekarang ini, saya batasi pengiriman menjadi Carry dan CDE saja. 
+
+Namun demikian, saat tidak ada pembatasan armada pengiriman, saya menemukan penggunaan armada besar tetap memberikan nilai _cost_ yang masih "kecil". Salah satu penyebabnya adalah besaran unit `cost per km` yang digunakan relatif kecil dan tidak terlalu berbeda antara satu dengan yang lain.
+
+## Keoptimalan
+
+Hasil _run_ algoritma di atas __sudah menjamin__ bahwa tidak ada _constraints_ yang dilanggar. Namun apakah hasilnya sudah yang __paling optimal__?
+
+Tentu tidak ada jaminan hasilnya adalah yang paling optimal, kita masih bisa melakukan beberapa _parameter model tunning_ untuk mendapatkan hasil yang optimal. Namun setidaknya saran dari algoritma di atas sudah bisa dijadikan masukan dalam membuat _routing_ transporter.
+
 
 

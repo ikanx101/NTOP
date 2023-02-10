@@ -110,10 +110,11 @@ armada_generate = function(n_toko){
   for(i in 1:n_toko){
     # kita ambil dulu
     # di toko tersebut armada terbesar yang boleh liwat itu armada yang mana
-    jenis_armada_sel = sample(df_toko$max_armada[i],1)
-    # baru kita akan cek id_armada yang seharusnya digenerate
-    id_armada_sel = df_jenis_armada %>% filter(armada == jenis_armada_sel) %>% .$id_armada
-    vec[i]        = sample(id_armada_sel,1)
+    jenis_armada_sel = df_toko$max_armada[i]
+    # karena semua armada hanya dibatasi punya 5 titik aja, makanya gak ada guna pilih 
+    # armada yang besar-besar
+    jenis_armada_sel = ifelse(jenis_armada_sel >= 2, 2, jenis_armada_sel)
+    vec[i]           = sample(jenis_armada_sel,1)
   }
   return(vec)
 }
@@ -187,7 +188,8 @@ tsp_hitung = function(new){
 obj_func = function(list_1,list_2,list_3){
   # kita buat dulu ke data frame untuk mengecek semua informasi yang ada
   df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
-  df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
+  df_temp_2 = df_order %>% select(nama_toko,sales_order,order_kubikasi,order_tonase,
+                                  tanggal_kirim_min,tanggal_kirim_max)
   df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
   df_temp_3$id_armada        = round(as.vector(list_1),0) # kita rounding dulu ya
   df_temp_3$tanggal_kirim    = round(as.vector(list_2),0) # kita rounding dulu ya
@@ -195,8 +197,9 @@ obj_func = function(list_1,list_2,list_3){
   df_temp_3                  = merge(df_temp_3,df_jenis_armada)
   
   # konstanta penalti
-  beta = 10^5
-  alpa = 100
+  beta  = 10^5
+  alpa  = 10^3
+  gamma = 10^4
   
   # kita pecah dulu berdasarkan armada dan tanggal
   pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim,armada_ke)
@@ -223,6 +226,9 @@ obj_func = function(list_1,list_2,list_3){
   # constraint 4
   # rute yang dilalui tidak melebihi max rute
   constraint_4 = rep(0,n_pecah)
+  # constraint 5
+  # tidak ada yang telat kirim
+  constraint_5 = rep(0,n_pecah)
   
   # proses menghitung semua constraint
   for(i in 1:n_pecah){
@@ -247,27 +253,37 @@ obj_func = function(list_1,list_2,list_3){
     c_4              = max(c_4,0)                        # 2-5 titik
     constraint_4[i]  = alpa * c_4^2
     
+    # constraint 5
+    c_5              = temp_1 %>% 
+                       mutate(skor = ifelse(tanggal_kirim <= tanggal_kirim_max &
+                                            tanggal_kirim >= tanggal_kirim_min,
+                                            0,
+                                            1)) %>% 
+                       summarise(skor = sum(skor))
+    c_5              = as.numeric(c_5)
+    constraint_5[i]  = gamma * as.numeric(c_5)
   }
   
   # ada beberapa constraint yang hanya bisa dilihat per tanggal kirim
   pecah      = df_temp_3 %>% group_split(tanggal_kirim)
   n_pecah    = length(pecah)
   
-  # constraint 5
+  # constraint 6
   # total waktu loading
-  constraint_5 = rep(0,n_pecah)
+  constraint_6 = rep(0,n_pecah)
   
   # proses menghitung semua constraint
   for(i in 1:n_pecah){
     temp_1 = pecah[[i]]
-    # constraint 5
+    # constraint 6
     c_1              = sum(temp_1$loading_time) - df_gudang
     c_1              = max(c_1,0)
-    constraint_5[i]  = beta * c_1^2
+    constraint_6[i]  = beta * c_1^2
   }
   
   output = jarak_total + sum(constraint_1) + sum(constraint_2) + 
-    sum(constraint_3) + sum(constraint_4) + sum(constraint_5)
+    sum(constraint_3) + sum(constraint_4) + sum(constraint_5) +
+    sum(constraint_6)
   
   return(output)
 }
@@ -281,7 +297,7 @@ ro_kon_1 = function(list,center){
   Xt_1 = list
   # kita rotasikan dan konstraksikan
   X1 = mat_rotasi %*% (Xt_1 - center_1)
-  X1 = center_1 + (.7 * X1)
+  X1 = center_1 + (.8 * X1)
   X1 = ifelse(X1 <= 1,1,X1)
   X1 = ifelse(X1 >= n_armada,n_armada,X1)
   return(X1)
@@ -293,9 +309,9 @@ ro_kon_2 = function(list,center){
   Xt_2 = list
   # kita rotasikan dan konstraksikan
   X2 = mat_rotasi %*% (Xt_2 - center_2)
-  X2 = center_2 + (.7 * X2)
+  X2 = center_2 + (.8 * X2)
   X2 = ifelse(X2 <= 1,1,X2)
-  X2 = ifelse(X2 >= max_tanggal_kirim,max_tanggal_kirim,X2) # seandainya lebih dari max hari pengiriman
+  #X2 = ifelse(X2 >= max_tanggal_kirim,max_tanggal_kirim,X2) # seandainya lebih dari max hari pengiriman
   return(X2)
 }
 
@@ -305,9 +321,9 @@ ro_kon_3 = function(list,center){
   Xt_2 = list
   # kita rotasikan dan konstraksikan
   X2 = mat_rotasi %*% (Xt_2 - center_2)
-  X2 = center_2 + (.7 * X2)
-  X2 = ifelse(X2 <= 1,1,X2)
-  X2 = ifelse(X2 >= 4,4,X2) # seandainya lebih dari 4 mobil maka harus diturunkan
+  X2 = center_2 + (.8 * X2)
+  X2 = ifelse(X2 <= 1,5,X2)
+  X2 = ifelse(X2 >= 5,1,X2) # seandainya lebih dari 6 mobil maka harus diturunkan
   return(X2)
 }
 # ==============================================================================
@@ -317,9 +333,9 @@ ro_kon_3 = function(list,center){
 # ==============================================================================
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
-n_armada = nrow(df_jenis_armada)
-n_solusi = 550
-n_sdoa   = 20
+n_armada = 2 #nrow(df_jenis_armada)
+n_solusi = 800
+n_sdoa   = 10
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
 # paralel
@@ -336,8 +352,8 @@ hasil = mcmapply(armada_generate,df_dummy$n_toko,
 # pecah ke list
 solusi_1 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
 
-# kita bikin solusi_3 yakni mobil ke berapa
-gener_solusi_3 = function(dummy){sample(4,82,replace = T)} # 4 banyak mobil
+# kita bikin solusi_5 yakni mobil ke berapa
+gener_solusi_3 = function(dummy){sample(6,n_toko,replace = T)} # 6 banyak mobil
 hasil = mcmapply(gener_solusi_3,
                  df_dummy$n_toko,
                  mc.cores = numCores)
@@ -402,32 +418,49 @@ center_3 = solusi_3[[n_bhole]]
 
 # kita buat dulu ke data frame untuk mengecek semua informasi yang ada
 df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
-df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
+df_temp_2 = df_order %>% select(nama_toko,sales_order,order_kubikasi,order_tonase,
+                                tanggal_kirim_min,tanggal_kirim_max)
 df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
 df_temp_3$id_armada        = round(as.vector(center_1),0) # kita rounding dulu ya
 df_temp_3$tanggal_kirim    = round(as.vector(center_2),0) # kita rounding dulu ya
 df_temp_3$armada_ke        = round(as.vector(center_3),0)
 df_temp_3                  = merge(df_temp_3,df_jenis_armada)
 
-nama_file_rda = paste0(target_gudang," done ver baru XI.rda")
+nama_file_rda = paste0(target_gudang," done new 9.rda")
 
 save(df_temp_3,file = nama_file_rda)
 
 # ==============================================================================
 
-# catatan 8 armada jadinya 66
+# terbaik berarti 59.18 ciawi done new 7.rda
+# terbaik berarti 52.00 ciawi done new 8.rda
+# yang 9 saya bikin 5 mobil aja
 
 
-# catatan terbaik saat ini 8 dengan hasil 61.96
-# ciawi done ver baru I.rda hasilnya 57
-# ciawi versi 4 hasilnya 54
 
 nama_file_rda
 
+# kita akan tambahkan perhitungan apakah melanggar constraint atau tidak
+resultado = 
+  df_temp_3 %>% 
+  select(id_armada,armada_ke,tanggal_kirim,nama_toko) %>% 
+  group_split(id_armada,tanggal_kirim,armada_ke)
 
+for(i in 1:length(resultado)){
+  temp = resultado[[i]]
+  if(nrow(temp) > 5){
+    print(paste0("Ditemukan pelanggaran pada ",i))
+    temp
+    break
+  }
+  print(paste0("Alhamdulillah tidak ada pelanggaran"))
+}
 
-
-
+df_temp_3 %>% 
+  select(id_armada,armada_ke,tanggal_kirim,sales_order,nama_toko,
+         tanggal_kirim_min,tanggal_kirim_max) %>% 
+  arrange(tanggal_kirim,id_armada,armada_ke) %>% 
+  group_split(tanggal_kirim)
 
 
 
