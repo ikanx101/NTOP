@@ -224,7 +224,7 @@ Fungsi objektif pada model ini adalah:
 ```{r,include=FALSE}
 rm(list=ls())
 
-load("ciawi done ver baru VI.rda")
+load("ciawi done ver baru XI.rda")
 
 # jangan lupa ganti tanggal
 tanggal_minimal = as.Date(as.character("2022-11-29"),
@@ -290,6 +290,26 @@ temp = list_jadwal[[i]]
 printing(temp)
 
 i    = 7
+temp = list_jadwal[[i]]
+printing(temp)
+
+i    = 8
+temp = list_jadwal[[i]]
+printing(temp)
+
+i    = 9
+temp = list_jadwal[[i]]
+printing(temp)
+
+i    = 10
+temp = list_jadwal[[i]]
+printing(temp)
+
+i    = 11
+temp = list_jadwal[[i]]
+printing(temp)
+
+i    = 12
 temp = list_jadwal[[i]]
 printing(temp)
 ```
