@@ -129,7 +129,7 @@ tanggal_generate = function(var,df){
       hasil[i] = min[i]
     }
     if(min[i] != max[i]){
-      hasil[i] = sample(c(min[i]:max[i]),1)
+      hasil[i] = sample(c(min[i]:(min[i]+3)),1) 
     }
   }
   return(hasil)
@@ -199,7 +199,7 @@ obj_func = function(list_1,list_2,list_3){
   # konstanta penalti
   beta  = 10^5
   alpa  = 10^3
-  gamma = 10^4
+  gamma = 10^2
   
   # kita pecah dulu berdasarkan armada dan tanggal
   pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim,armada_ke)
@@ -297,9 +297,9 @@ ro_kon_1 = function(list,center){
   Xt_1 = list
   # kita rotasikan dan konstraksikan
   X1 = mat_rotasi %*% (Xt_1 - center_1)
-  X1 = center_1 + (.8 * X1)
-  X1 = ifelse(X1 <= 1,1,X1)
-  X1 = ifelse(X1 >= n_armada,n_armada,X1)
+  X1 = center_1 + (.4 * X1)
+  X1 = ifelse(X1 <= 1,1,X1)  # kita main putar-putar dulu agar basisnya tetap sama
+  X1 = ifelse(X1 >= 2,2,X1)
   return(X1)
 }
 
@@ -309,7 +309,7 @@ ro_kon_2 = function(list,center){
   Xt_2 = list
   # kita rotasikan dan konstraksikan
   X2 = mat_rotasi %*% (Xt_2 - center_2)
-  X2 = center_2 + (.8 * X2)
+  X2 = center_2 + (.4 * X2)
   X2 = ifelse(X2 <= 1,1,X2)
   #X2 = ifelse(X2 >= max_tanggal_kirim,max_tanggal_kirim,X2) # seandainya lebih dari max hari pengiriman
   return(X2)
@@ -320,10 +320,10 @@ ro_kon_2 = function(list,center){
 ro_kon_3 = function(list,center){
   Xt_2 = list
   # kita rotasikan dan konstraksikan
-  X2 = mat_rotasi %*% (Xt_2 - center_2)
-  X2 = center_2 + (.8 * X2)
+  X2 = mat_rotasi %*% (Xt_2 - center_3)
+  X2 = center_3 + (.4 * X2)
   X2 = ifelse(X2 <= 1,5,X2)
-  X2 = ifelse(X2 >= 5,1,X2) # seandainya lebih dari 6 mobil maka harus diturunkan
+  X2 = ifelse(X2 >= 5,1,X2) # seandainya lebih dari 5 mobil maka harus diturunkan
   return(X2)
 }
 # ==============================================================================
@@ -334,13 +334,13 @@ ro_kon_3 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = 2 #nrow(df_jenis_armada)
-n_solusi = 800
-n_sdoa   = 10
+n_solusi = 720
+n_sdoa   = 13
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
 # paralel
 library(parallel)
-numCores = 10
+numCores = 6
 
 # list pertama yakni armada
 # bikin dummy
@@ -353,7 +353,7 @@ hasil = mcmapply(armada_generate,df_dummy$n_toko,
 solusi_1 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
 
 # kita bikin solusi_5 yakni mobil ke berapa
-gener_solusi_3 = function(dummy){sample(6,n_toko,replace = T)} # 6 banyak mobil
+gener_solusi_3 = function(dummy){sample(5,n_toko,replace = T)} # 6 banyak mobil
 hasil = mcmapply(gener_solusi_3,
                  df_dummy$n_toko,
                  mc.cores = numCores)
@@ -426,7 +426,7 @@ df_temp_3$tanggal_kirim    = round(as.vector(center_2),0) # kita rounding dulu y
 df_temp_3$armada_ke        = round(as.vector(center_3),0)
 df_temp_3                  = merge(df_temp_3,df_jenis_armada)
 
-nama_file_rda = paste0(target_gudang," done new 9.rda")
+nama_file_rda = paste0(target_gudang," done new 12.rda")
 
 save(df_temp_3,file = nama_file_rda)
 
@@ -434,7 +434,9 @@ save(df_temp_3,file = nama_file_rda)
 
 # terbaik berarti 59.18 ciawi done new 7.rda
 # terbaik berarti 52.00 ciawi done new 8.rda
-# yang 9 saya bikin 5 mobil aja
+# yang 9 the best so far
+# the best 10 49 sekian
+# 11 hasilnya 45.7284
 
 
 
