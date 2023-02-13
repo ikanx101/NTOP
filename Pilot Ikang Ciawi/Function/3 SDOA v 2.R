@@ -322,8 +322,8 @@ ro_kon_3 = function(list,center){
   # kita rotasikan dan konstraksikan
   X2 = mat_rotasi %*% (Xt_2 - center_3)
   X2 = center_3 + (.4 * X2)
-  X2 = ifelse(X2 <= 1,5,X2)
-  X2 = ifelse(X2 >= 5,1,X2) # seandainya lebih dari 5 mobil maka harus diturunkan
+  X2 = ifelse(X2 <= 1,6,X2)
+  X2 = ifelse(X2 >= 6,1,X2) # seandainya lebih dari 5 mobil maka harus diturunkan
   return(X2)
 }
 # ==============================================================================
@@ -334,8 +334,8 @@ ro_kon_3 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = 2 #nrow(df_jenis_armada)
-n_solusi = 720
-n_sdoa   = 13
+n_solusi = 1200
+n_sdoa   = 15
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
 # paralel
@@ -353,7 +353,7 @@ hasil = mcmapply(armada_generate,df_dummy$n_toko,
 solusi_1 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
 
 # kita bikin solusi_5 yakni mobil ke berapa
-gener_solusi_3 = function(dummy){sample(5,n_toko,replace = T)} # 6 banyak mobil
+gener_solusi_3 = function(dummy){sample(6,n_toko,replace = T)} # 6 banyak mobil
 hasil = mcmapply(gener_solusi_3,
                  df_dummy$n_toko,
                  mc.cores = numCores)
@@ -426,7 +426,7 @@ df_temp_3$tanggal_kirim    = round(as.vector(center_2),0) # kita rounding dulu y
 df_temp_3$armada_ke        = round(as.vector(center_3),0)
 df_temp_3                  = merge(df_temp_3,df_jenis_armada)
 
-nama_file_rda = paste0(target_gudang," done new 12.rda")
+nama_file_rda = paste0(target_gudang," done new 20.rda")
 
 save(df_temp_3,file = nama_file_rda)
 
@@ -451,7 +451,7 @@ resultado =
 for(i in 1:length(resultado)){
   temp = resultado[[i]]
   if(nrow(temp) > 5){
-    print(paste0("Ditemukan pelanggaran pada ",i))
+    print(paste0("Ditemukan pelanggaran max titik pada ",i))
     temp
     break
   }

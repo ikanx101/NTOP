@@ -225,7 +225,7 @@ Fungsi objektif pada model ini adalah:
 ```{r,include=FALSE}
 rm(list=ls())
 
-load("ciawi done new 11.rda")
+load("ciawi done new 20.rda")
 load("dbase_toko.rda")
 
 df_cust_complete_ready = df_cust_complete_ready %>% select(nama_toko,provinsi,kota_kab,kecamatan)
@@ -287,14 +287,6 @@ temp = list_jadwal[[i]]
 printing(temp)
 
 i    = 5
-temp = list_jadwal[[i]]
-printing(temp)
-
-i    = 6
-temp = list_jadwal[[i]]
-printing(temp)
-
-i    = 7
 temp = list_jadwal[[i]]
 printing(temp)
 
