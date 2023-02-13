@@ -18,21 +18,24 @@
             [constraints] -> [tiap tanggal]
             [tiap tanggal] -> [<choice> melanggar loading time|gudang?]
             [<choice> melanggar loading time] -> T [punishment 1]
-            [<choice> melanggar loading time] -> F [sukses 1]
+            [<choice> melanggar loading time] -> F [reward 1]
             
             [constraints] -> [tiap armada per tanggal]
             [tiap armada per tanggal] -> [<choice> melanggar kapasitas armada?|(kubik dan tonase)]
             [<choice> melanggar kapasitas armada?] -> T [punishment 2]
-            [<choice> melanggar kapasitas armada?] -> F [sukses 2]
+            [<choice> melanggar kapasitas armada?] -> F [reward 2]
             
             [tiap armada per tanggal] -> [<choice> melanggar armada terbesar?]
             [<choice> melanggar armada terbesar?] -> T [punishment 3]
-            [<choice> melanggar armada terbesar?] -> F [sukses 3]
+            [<choice> melanggar armada terbesar?] -> F [reward 3]
             
             [tiap armada per tanggal] -> [<choice> melanggar max titik?]
             [<choice> melanggar max titik?] -> T [punishment 4]
-            [<choice> melanggar max titik?] -> F [sukses 4]
+            [<choice> melanggar max titik?] -> F [reward 4]
             
+            [tiap armada per tanggal] -> [<choice> melanggar tanggal kirim?]
+            [<choice> melanggar tanggal kirim?] -> T [punishment 5]
+            [<choice> melanggar tanggal kirim?] -> F [reward 5]
             ]
             
 [computation model tahap I] -> [computation model tahap II|

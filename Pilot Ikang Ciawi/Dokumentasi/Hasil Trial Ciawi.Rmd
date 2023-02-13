@@ -158,7 +158,6 @@ Untuk memudahkan perhitungan model optimisasi, saya akan memilih _sales order_ p
 
 ```{r,echo=FALSE}
 df_sales_order_ready %>% 
-  select(-sales_order) %>% 
   mutate(tanggal_kirim_min = tanggal_minimal + tanggal_kirim_min - 1,
          tanggal_kirim_max = tanggal_minimal + tanggal_kirim_max - 1) %>% 
   rename(order_kg = order_tonase) %>% 
@@ -168,7 +167,9 @@ df_sales_order_ready %>%
 ## Data Informasi Detail Toko
 
 ```{r,echo=FALSE}
+load("dbase_toko.rda")
 df_cust_complete_ready %>% 
+  select(-X,-url,-lat,-long) %>% 
   DT::datatable(caption = "Data Informasi Detail ALamat Toko",filter = "bottom")
 ```
 
@@ -224,7 +225,10 @@ Fungsi objektif pada model ini adalah:
 ```{r,include=FALSE}
 rm(list=ls())
 
-load("ciawi done ver baru XI.rda")
+load("ciawi done new 11.rda")
+load("dbase_toko.rda")
+
+df_cust_complete_ready = df_cust_complete_ready %>% select(nama_toko,provinsi,kota_kab,kecamatan)
 
 # jangan lupa ganti tanggal
 tanggal_minimal = as.Date(as.character("2022-11-29"),
@@ -233,6 +237,7 @@ tanggal_minimal = as.Date(as.character("2022-11-29"),
 # kita split berdasarkan tanggal kirim
 list_jadwal = 
   df_temp_3 %>% 
+  merge(df_cust_complete_ready) %>% 
   mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1) %>% 
   select(-long,-lat,-cost_per_km) %>% 
   group_split(tanggal_kirim)
@@ -245,12 +250,11 @@ printing = function(temp){
   tanggal    = paste0("Pengiriman tanggal: ",temp$tanggal_kirim[1])
   temp = 
     temp %>% 
-    select(nama_toko,id_armada,armada,order_kubikasi,order_tonase) %>% 
-    arrange(id_armada) %>% 
-    rename(jenis_armada = armada,
-           armada_ke = id_armada)
+    select(sales_order,nama_toko,armada_ke,armada,order_kubikasi,order_tonase,provinsi,kota_kab,kecamatan) %>% 
+    arrange(armada) %>% 
+    rename(jenis_armada = armada)
     
-  armada_ke = temp$armada_ke %>% unique()
+  armada_ke = temp$armada_ke %>% unique() %>% sort()
   id_new    = 1:length(armada_ke)
   df_refer  = data.frame(armada_ke,id_new)
   
@@ -258,6 +262,7 @@ printing = function(temp){
     select(-armada_ke) %>% 
     rename(armada_ke = id_new) %>% 
     relocate(armada_ke,.before = jenis_armada) %>% 
+    arrange(jenis_armada,armada_ke) %>% 
     knitr::kable(caption = tanggal)
 }
 
@@ -293,25 +298,6 @@ i    = 7
 temp = list_jadwal[[i]]
 printing(temp)
 
-i    = 8
-temp = list_jadwal[[i]]
-printing(temp)
-
-i    = 9
-temp = list_jadwal[[i]]
-printing(temp)
-
-i    = 10
-temp = list_jadwal[[i]]
-printing(temp)
-
-i    = 11
-temp = list_jadwal[[i]]
-printing(temp)
-
-i    = 12
-temp = list_jadwal[[i]]
-printing(temp)
 ```
 
 # ANALISA DAN DISKUSI
