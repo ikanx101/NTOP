@@ -16,13 +16,14 @@ setwd("~/NTOP/Pilot Ikang Ciawi/Function")
 library(dplyr)
 library(tidyr)
 library(TSP)
+library(tictoc)
 # ==============================================================================
 
 # ==============================================================================
 # membuat function rotation matrix
 buat_rot_mat = function(theta,n){
   # buat template sebuah matriks identitas
-  temp_mat = buat_rot_mat(0,ncol = n,nrow = n)
+  temp_mat = matrix(0,ncol = n,nrow = n)
   diag(temp_mat) = 1
   
   # buat matriks identitas terlebih dahulu
@@ -47,13 +48,8 @@ buat_rot_mat = function(theta,n){
   return(mat_rot)
 }
 # ==============================================================================
-theta = pi
-n = 400
-# cara run matriks rotasi dengan parallel computing
-tes = parallel::mcmapply(buat_rot_mat,theta,n,mc.cores = 10)
-# jangan lupa menyimpannya dalam bentuk matriks kembali
-matrix(tes,ncol = n,nrow = n) 
-
+# notes:
+# utk ini biarkan saja serial tidak perlu parallel
 
 # ==============================================================================
 # load datasets
@@ -160,7 +156,8 @@ tanggal_generate = function(var,df){
       hasil[i] = min[i]
     }
     if(min[i] != max[i]){
-      hasil[i] = sample(c(min[i]:max[i]),1)
+      # kita paksakan selesai dalam waktu yang sesingkat-singkatnya
+      hasil[i] = sample(c(min[i]:(min[i]+3)),1) 
     }
   }
   return(hasil)
@@ -228,9 +225,9 @@ obj_func = function(list_1,list_2,list_3){
   df_temp_3                  = merge(df_temp_3,df_jenis_armada)
   
   # konstanta penalti
-  beta  = 10^5
-  alpa  = 10^3
-  gamma = 10^2
+  beta  = 10^6
+  alpa  = 10^4
+  gamma = 10^3
   
   # kita pecah dulu berdasarkan armada dan tanggal
   pecah      = df_temp_3 %>% group_split(id_armada,tanggal_kirim,armada_ke)
@@ -332,7 +329,7 @@ ro_kon_1 = function(list,center){
   X1 = mat_rotasi %*% (Xt_1 - center_1)
   X1 = center_1 + (.4 * X1)
   X1 = ifelse(X1 <= 1,1,X1)  # kita main putar-putar dulu agar basisnya tetap sama
-  X1 = ifelse(X1 >= 2,2,X1)
+  X1 = ifelse(X1 >= armada_terbesar,armada_terbesar,X1)
   return(X1)
 }
 
@@ -355,8 +352,8 @@ ro_kon_3 = function(list,center){
   # kita rotasikan dan konstraksikan
   X2 = mat_rotasi %*% (Xt_2 - center_3)
   X2 = center_3 + (.4 * X2)
-  X2 = ifelse(X2 <= 1,6,X2)
-  X2 = ifelse(X2 >= 6,1,X2) # seandainya lebih dari 5 mobil maka harus diturunkan
+  X2 = ifelse(X2 <= 1,5,X2)
+  X2 = ifelse(X2 >= 5,1,X2) # seandainya lebih dari 5 mobil maka harus diturunkan
   return(X2)
 }
 # ==============================================================================
@@ -366,7 +363,7 @@ ro_kon_3 = function(list,center){
 # ==============================================================================
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
-n_solusi = 1200
+n_solusi = 100
 n_sdoa   = 15
 
 
@@ -385,6 +382,14 @@ hasil = mcmapply(armada_generate,df_dummy$n_toko,
 # pecah ke list
 solusi_1 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
 
+# kita bikin solusi_3 yakni mobil ke berapa
+gener_solusi_3 = function(dummy){sample(5,n_toko,replace = T)} # 6 banyak mobil
+hasil = mcmapply(gener_solusi_3,
+                 df_dummy$n_toko,
+                 mc.cores = numCores)
+
+# pecah ke list
+solusi_3 = lapply(seq_len(ncol(hasil)), function(i) hasil[,i])
 
 # list pertama yakni tanggal
 solusi_2 = vector("list",n_solusi)
@@ -395,15 +400,17 @@ for(i in 1:n_solusi){
   print(i)
 }
 
+tic("buat matrot")
 # buat matriks rotasi
 mat_rotasi = buat_rot_mat(2*pi / 20,n_toko)
+toc()
 
+tic("SDOA")
 # initial condition
 f_hit = c()
 
 # kita hitung dulu initial function objective
-f_hit = mcmapply(obj_func,solusi_1,solusi_2,mc.cores = numCores)
-
+f_hit = mcmapply(obj_func,solusi_1,solusi_2,solusi_3,mc.cores = numCores)
 
 # kita mulai perhitungannya di sini
 for(iter in 1:n_sdoa){
@@ -413,6 +420,7 @@ for(iter in 1:n_sdoa){
   # kita jadikan center of gravity
   center_1 = solusi_1[[n_bhole]]
   center_2 = solusi_2[[n_bhole]]
+  center_3 = solusi_3[[n_bhole]]
   
   solusi_1_new = mcmapply(ro_kon_1,solusi_1,center_1)
   solusi_1     = lapply(seq_len(ncol(solusi_1_new)), function(i) solusi_1_new[,i])
@@ -420,13 +428,17 @@ for(iter in 1:n_sdoa){
   solusi_2_new = mcmapply(ro_kon_2,solusi_2,center_2)
   solusi_2     = lapply(seq_len(ncol(solusi_2_new)), function(i) solusi_2_new[,i])
   
+  solusi_3_new = mcmapply(ro_kon_3,solusi_3,center_3)
+  solusi_3     = lapply(seq_len(ncol(solusi_3_new)), function(i) solusi_3_new[,i])
+  
   # kita hitung kembali function objective
-  f_hit = mcmapply(obj_func,solusi_1,solusi_2,mc.cores = numCores)
+  f_hit = mcmapply(obj_func,solusi_1,solusi_2,solusi_3,mc.cores = numCores)
   
   pesan = paste0("Iterasi ke: ",iter," hasilnya: ",min(f_hit))
   print(pesan)
 }
 
+toc()
 
 # kita akan cek solusinya
 n_bhole = which.min(f_hit)
@@ -434,16 +446,19 @@ n_bhole = which.min(f_hit)
 # solusinya
 center_1 = solusi_1[[n_bhole]]
 center_2 = solusi_2[[n_bhole]]
+center_3 = solusi_3[[n_bhole]]
 
 # kita buat dulu ke data frame untuk mengecek semua informasi yang ada
 df_temp_1 = df_toko %>% select(nama_toko,long,lat,max_armada)
-df_temp_2 = df_order %>% select(nama_toko,order_kubikasi,order_tonase)
+df_temp_2 = df_order %>% select(nama_toko,sales_order,order_kubikasi,order_tonase,
+                                tanggal_kirim_min,tanggal_kirim_max)
 df_temp_3 = merge(df_temp_1,df_temp_2) %>% distinct()
-df_temp_3$id_armada     = round(as.vector(center_1),0) # kita rounding dulu ya
-df_temp_3$tanggal_kirim = round(as.vector(center_2),0) # kita rounding dulu ya
-df_temp_3 = merge(df_temp_3,df_jenis_armada)
+df_temp_3$id_armada        = round(as.vector(center_1),0) # kita rounding dulu ya
+df_temp_3$tanggal_kirim    = round(as.vector(center_2),0) # kita rounding dulu ya
+df_temp_3$armada_ke        = round(as.vector(center_3),0)
+df_temp_3                  = merge(df_temp_3,df_jenis_armada)
 
-nama_file_rda = paste0(target_gudang," done ver baru VII.rda")
+nama_file_rda = paste0(target_gudang," done new 20.rda")
 
 save(df_temp_3,file = nama_file_rda)
 
