@@ -297,7 +297,7 @@ ro_kon_1 = function(list,center){
   Xt_1 = list
   # kita rotasikan dan konstraksikan
   X1 = mat_rotasi %*% (Xt_1 - center_1)
-  X1 = center_1 + (.8 * X1)
+  X1 = center_1 + (.9 * X1)
   X1 = ifelse(X1 <= 1,1,X1)
   X1 = ifelse(X1 >= n_armada,n_armada,X1)
   return(X1)
@@ -309,7 +309,7 @@ ro_kon_2 = function(list,center){
   Xt_2 = list
   # kita rotasikan dan konstraksikan
   X2 = mat_rotasi %*% (Xt_2 - center_2)
-  X2 = center_2 + (.8 * X2)
+  X2 = center_2 + (.9 * X2)
   X2 = ifelse(X2 <= 1,1,X2)
   #X2 = ifelse(X2 >= max_tanggal_kirim,max_tanggal_kirim,X2) # seandainya lebih dari max hari pengiriman
   return(X2)
@@ -321,7 +321,7 @@ ro_kon_3 = function(list,center){
   Xt_2 = list
   # kita rotasikan dan konstraksikan
   X2 = mat_rotasi %*% (Xt_2 - center_2)
-  X2 = center_2 + (.8 * X2)
+  X2 = center_2 + (.9 * X2)
   X2 = ifelse(X2 <= 1,5,X2)
   X2 = ifelse(X2 >= 5,1,X2) # seandainya lebih dari 6 mobil maka harus diturunkan
   return(X2)
@@ -334,8 +334,8 @@ ro_kon_3 = function(list,center){
 # sekarang kita akan mulai bagian yang seru
 n_toko   = nrow(df_toko)
 n_armada = 2 #nrow(df_jenis_armada)
-n_solusi = 800
-n_sdoa   = 10
+n_solusi = 900
+n_sdoa   = 100
 
 # karena bakal banyak generatenya, kita akan gunakan prinsip parallel saja
 # paralel
