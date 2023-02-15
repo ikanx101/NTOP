@@ -110,10 +110,10 @@ df_sales_order =
 # perbedaan 7 februari
 # alih-alih mengambil range tanggal karena hasilnya gak keliatan
 # saya akan ambil per area saja
-area = c("bandung|yogya |griya|yomart")
+area = c("bandung|yogya |griya|yomart|sukabumi|garut")
 
 # kita akan ambil range tanggal tertentu saja
-range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[5:14]
+range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[10:20]
 
 # kita akan ambil range tanggal tersebut saja
 df_sales_order_ready = 
@@ -201,3 +201,5 @@ save(df_sales_order,
      df_cust_uncomplete,
      df_cust_complete_ready,
      file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/dokumentasi.rda")
+
+print("DONE")
