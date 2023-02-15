@@ -113,7 +113,7 @@ df_sales_order =
 area = c("bandung|yogya |griya|yomart|sukabumi|garut")
 
 # kita akan ambil range tanggal tertentu saja
-range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[10:20]
+range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[10:15]
 
 # kita akan ambil range tanggal tersebut saja
 df_sales_order_ready = 
@@ -140,7 +140,13 @@ tanggal_minimal = as.Date(tanggal_minimal,origin = "1970-01-01")
 df_sales_order_ready = 
   df_sales_order_ready %>% 
   mutate(tanggal_kirim_min = tanggal_kirim_min - min_number,
-         tanggal_kirim_max = tanggal_kirim_max - min_number)
+         tanggal_kirim_max = tanggal_kirim_max - min_number,
+         # ini kita buat jaring pengaman
+         # seandainya ada tanggal max yang kosong
+         # maka diisi sama dengan tanggal kirim min
+         tanggal_kirim_max = ifelse(tanggal_kirim_max < tanggal_kirim_min,
+                                    tanggal_kirim_min,
+                                    tanggal_kirim_max))
 # ==============================================================================
 
 
