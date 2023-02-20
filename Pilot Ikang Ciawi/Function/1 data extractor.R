@@ -113,7 +113,7 @@ df_sales_order =
 area = c("bandung|yogya |griya|yomart|sukabumi|garut")
 
 # kita akan ambil range tanggal tertentu saja
-range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort() %>% .[10:15]
+range_tanggal  = df_sales_order$tanggal_kirim_min %>% unique() %>% sort()
 
 # kita akan ambil range tanggal tersebut saja
 df_sales_order_ready = 
@@ -193,11 +193,11 @@ save(df_jenis_armada,df_toko,df_order,df_gudang,
      file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/modelling.rda")
 # ==============================================================================
 
-
 # ==============================================================================
 # kita save datanya
 # untuk keperluan dokumentasi
 
+# kita harus save dbase_toko di sini
 df_cust_complete_ready = df_toko
 
 save(df_sales_order,
@@ -207,5 +207,12 @@ save(df_sales_order,
      df_cust_uncomplete,
      df_cust_complete_ready,
      file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/dokumentasi.rda")
+
+df_cust_pos            = df_cust_pos %>% rename(nama_toko = customer)
+df_kode_pos            = df_kode_pos %>% select(kode_pos,provinsi,kota_kab,kecamatan)
+df_cust_complete_ready = merge(df_cust_complete_ready,df_cust_pos) %>% merge(df_kode_pos)
+
+save(df_cust_complete_ready,
+     file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/dbase_toko.rda")
 
 print("DONE")
