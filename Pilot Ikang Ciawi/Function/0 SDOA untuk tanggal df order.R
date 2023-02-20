@@ -48,3 +48,42 @@ ro_kon = function(list){
   X2 = round(X2,0)
   return(X2)
 }
+
+# fungsi untuk fine tuning tanggal pengiriman
+utak_atik_tanggal = function(temp){
+  # kita ambil 2 tanggal yang muncul paling sedikit
+  tgl_terkecil = 
+    temp %>% 
+    group_by(tanggal_kirim) %>% 
+    tally() %>% 
+    ungroup() %>% 
+    arrange(n) %>% 
+    .$tanggal_kirim
+  
+  if(length(tgl_terkecil) > 1){
+    # kita ubah dan hitung apakah mungkin?
+    # kita tukar
+    for(ix in 2:length(tgl_terkecil)){
+      temp = 
+        temp %>% 
+        rowwise() %>% 
+        mutate(tanggal_kirim_new = ifelse(tanggal_kirim == tgl_terkecil[ix-1],
+                                          tgl_terkecil[ix],
+                                          tanggal_kirim)) %>%
+        ungroup() %>% 
+        rowwise() %>% 
+        mutate(marker = ifelse(tanggal_kirim_new <= tanggal_kirim_max & 
+                                 tanggal_kirim_new >= tanggal_kirim_min,
+                               0,
+                               1)) %>% 
+        mutate(tanggal_kirim_final = ifelse(marker == 1,tanggal_kirim,tanggal_kirim_new)) %>% 
+        ungroup() %>% 
+        select(-tanggal_kirim,-marker,-tanggal_kirim_new) %>% 
+        rename(tanggal_kirim = tanggal_kirim_final)
+      print("utak atik dulu")
+    }
+  }
+  return(temp)
+}
+
+

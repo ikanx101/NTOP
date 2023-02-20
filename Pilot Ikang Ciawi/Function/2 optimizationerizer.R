@@ -128,39 +128,15 @@ for(ikanx in 1:n_toko){
   print(paste0("Toko ",ikanx," DONE"))
 }
 
-
-save(hasil_df_order_per_toko,file = "temporary.rda")
 # nah dari hasil yang ada, kita akan buat optimisasinya lagi dengan menggabung 
 # yang "sedikit" ke yang "banyakan"
-ikanx = 41
-temp = hasil_df_order_per_toko[[ikanx]]
+# kita buat template dulu
+hasil_df_order_per_toko_tuning = vector("list",n_toko)
 
-# kita ambil 2 tanggal yang muncul paling sedikit
-tgl_terkecil = 
-  temp %>% 
-  group_by(tanggal_kirim) %>% 
-  tally() %>% 
-  ungroup() %>% 
-  arrange(n) %>% 
-  head(2) %>% 
-  .$tanggal_kirim
+for(ikanx in 1:length(hasil_df_order_per_toko)){
+  temp = hasil_df_order_per_toko[[ikanx]]
+  hasil_df_order_per_toko_tuning[[ikanx]] = utak_atik_tanggal(temp)
+  cat(paste0(ikanx))
+}
 
-# kita ubah dan hitung apakah mungkin?
-# kita tukar
-temp = 
-  temp %>% 
-  rowwise() %>% 
-  mutate(tanggal_kirim_new = ifelse(tanggal_kirim == tgl_terkecil[1],
-                                    tgl_terkecil[2],
-                                    tanggal_kirim)) %>%
-  ungroup() %>% 
-  rowwise() %>% 
-  mutate(marker = ifelse(tanggal_kirim_new <= tanggal_kirim_max & 
-                           tanggal_kirim_new >= tanggal_kirim_min,
-                         0,
-                         1)) %>% 
-  mutate(tanggal_kirim_final = ifelse(marker == 1,tanggal_kirim,tanggal_kirim_new)) %>% 
-  ungroup() %>% 
-  select(-tanggal_kirim,-marker,-tanggal_kirim_new) %>% 
-  rename(tanggal_kirim = tanggal_kirim_final)
-
+# sudah selesai
