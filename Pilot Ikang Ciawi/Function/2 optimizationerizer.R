@@ -89,13 +89,13 @@ for(ikanx in 1:n_toko){
     source("0 SDOA untuk tanggal df order.R")
     
     # kita generate calon solusinya terlebih dahulu
-    calon_solusi = mclapply(1:80,tanggal_generate,mc.cores = numcore)
+    calon_solusi = mclapply(1:210,tanggal_generate,mc.cores = numcore)
     
     # menghitung initial objective function
     f_hit = mcmapply(obj_func,calon_solusi,mc.cores = numcore)
     
     # kita mulai perhitungannya di sini
-    for(iter in 1:40){
+    for(iter in 1:10){
       # kita cari dulu mana yang akan jadi pusat
       n_bhole = which.min(f_hit)
       
@@ -118,6 +118,7 @@ for(ikanx in 1:n_toko){
     center_1           = calon_solusi[[n_bhole]]
     temp$tanggal_kirim = center_1
   }
+  
   if(marker_sdoa == 1){
     # tanggal kirimnya harus cepat-cepat
     temp$tanggal_kirim = temp$tanggal_kirim_min
@@ -127,15 +128,39 @@ for(ikanx in 1:n_toko){
   print(paste0("Toko ",ikanx," DONE"))
 }
 
-# kita kembalikan lagi ke sini
-final_df_order = do.call(rbind,hasil_df_order_per_toko)
 
-# sekarang kita akan lihat pertanggal itu perlu di-assign mobil berapa banyak
-ready_to_assign = 
-  final_df_order %>% 
-  group_split(tanggal_kirim)
+save(hasil_df_order_per_toko,file = "temporary.rda")
+# nah dari hasil yang ada, kita akan buat optimisasinya lagi dengan menggabung 
+# yang "sedikit" ke yang "banyakan"
+ikanx = 41
+temp = hasil_df_order_per_toko[[ikanx]]
 
+# kita ambil 2 tanggal yang muncul paling sedikit
+tgl_terkecil = 
+  temp %>% 
+  group_by(tanggal_kirim) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  arrange(n) %>% 
+  head(2) %>% 
+  .$tanggal_kirim
 
-
-
+# kita ubah dan hitung apakah mungkin?
+# kita tukar
+temp = 
+  temp %>% 
+  rowwise() %>% 
+  mutate(tanggal_kirim_new = ifelse(tanggal_kirim == tgl_terkecil[1],
+                                    tgl_terkecil[2],
+                                    tanggal_kirim)) %>%
+  ungroup() %>% 
+  rowwise() %>% 
+  mutate(marker = ifelse(tanggal_kirim_new <= tanggal_kirim_max & 
+                           tanggal_kirim_new >= tanggal_kirim_min,
+                         0,
+                         1)) %>% 
+  mutate(tanggal_kirim_final = ifelse(marker == 1,tanggal_kirim,tanggal_kirim_new)) %>% 
+  ungroup() %>% 
+  select(-tanggal_kirim,-marker,-tanggal_kirim_new) %>% 
+  rename(tanggal_kirim = tanggal_kirim_final)
 

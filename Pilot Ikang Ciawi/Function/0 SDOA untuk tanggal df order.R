@@ -1,15 +1,20 @@
 # generate tanggal kirim sesuai dengan data yang ada pada df_order
 tanggal_generate = function(dummy){
   hasil = rep(0,nrow(temp))
+  # ambil min dan max per baris
   min   = temp[["tanggal_kirim_min"]] %>% as.numeric()
   max   = temp[["tanggal_kirim_max"]] %>% as.numeric()
-  for(i in 1:nrow(temp)){
-    if(min[i] == max[i]){
-      hasil[i] = min[i]
-    }
-    if(min[i] != max[i]){
-      # kita paksakan selesai dalam waktu yang sesingkat-singkatnya
-      hasil[i] = sample(c(min[i]:(min[i] + 3)),1) 
+  
+  if(length(unique(min)) == 1){hasil = min}
+  if(length(unique(min)) != 1){
+    for(ix in 1:nrow(temp)){
+      if(min[ix] == max[ix]){
+        hasil[ix] = min[ix]
+      }
+      if(min[ix] != max[ix]){
+        # kita paksakan selesai dalam waktu yang sesingkat-singkatnya
+        hasil[ix] = sample(c(min[ix]:(min[ix]+4)),1) 
+      }
     }
   }
   return(hasil)
@@ -24,15 +29,11 @@ obj_func = function(list){
                            0,
                            1))
   # sebisa mungkin yang paling sedikit
-  n_tanggal = length(unique(list)) - 3
-  n_tanggal = max(n_tanggal,0)^2
-  # berapa banyak load pekerjaan
-  # seharusnya sehari bisa dapat minimal 25 baris sales order
-  load      = nrow(temp) - 10
-  load      = max(-load,0) ^ 2
+  n_tanggal = length(unique(list)) - 2
+  n_tanggal = max(n_tanggal,0)^2 * 10
   # dihukum jika lebih dari tanggal yang seharusnya
-  punish    = sum(temp$marker) * 100
-  return(n_tanggal + load + punish)
+  punish    = sum(temp$marker) * 10000
+  return(n_tanggal + punish)
 }
 
 # kita buat lagi rotation matriksnya
