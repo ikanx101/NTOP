@@ -154,7 +154,7 @@ Pada _report_ ini, kita akan gunakan data yang sudah dihimpun oleh tim DTA dan D
 
 ## Data Terkait Order Toko
 
-Untuk memudahkan perhitungan model optimisasi, saya akan memilih _sales order_ pada rentang tanggal berikut ini:
+Untuk memudahkan perhitungan model optimisasi, saya akan memilih _sales order_ pada area Bandung, Sukabumi, dan Garut. Ada `408` _sales order_ yang terlibat dalam data ini:
 
 ```{r,echo=FALSE}
 df_sales_order_ready %>% 
@@ -169,7 +169,7 @@ df_sales_order_ready %>%
 ```{r,echo=FALSE}
 df_cust_complete_ready %>% 
   select(-lat,-long) %>% 
-  DT::datatable(caption = "Data Informasi Detail ALamat Toko",filter = "bottom")
+  DT::datatable(caption = "Data Informasi Detail Alamat Toko",filter = "bottom")
 ```
 
 ## Data Gudang
@@ -233,36 +233,34 @@ df_cust_complete_ready = df_cust_complete_ready %>% select(nama_toko,provinsi,ko
 tanggal_minimal = as.Date(as.character("2022-11-07"),
                           "%Y-%m-%d")
 
-# kita split berdasarkan tanggal kirim
-list_jadwal = 
-  df_temp_3 %>% 
-  merge(df_cust_complete_ready) %>% 
-  mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1) %>% 
-  select(-long,-lat,-cost_per_km) %>% 
-  group_split(tanggal_kirim)
-
 # kita akan buat contoh dulu
-# temp = list_jadwal[[3]]
+# temp = jadwal_tanggal_armada[[1]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
 
 # function untuk print datanya
 printing = function(temp){
   tanggal    = paste0("Pengiriman tanggal: ",temp$tanggal_kirim[1])
   temp = 
     temp %>% 
-    select(sales_order,nama_toko,armada_ke,armada,order_kubikasi,order_tonase,provinsi,kota_kab,kecamatan) %>% 
-    arrange(armada) %>% 
-    rename(jenis_armada = armada)
+    merge(df_cust_complete_ready) %>% 
+    select(sales_order,nama_toko,provinsi,kota_kab,kecamatan,
+           armada_terpilih,armada_ke,
+           order_kubikasi,
+           order_tonase) %>% 
+    arrange(armada_terpilih,armada_ke) %>% 
+    rename(jenis_armada = armada_terpilih) %>% 
+    mutate(jenis_armada = case_when(
+      jenis_armada == 1 ~ "Carry",
+      jenis_armada == 2 ~ "CDE",
+      jenis_armada == 3 ~ "CDD",
+      jenis_armada == 4 ~ "CDD Jumbo",
+      jenis_armada == 5 ~ "Fuso",
+      jenis_armada == 6 ~ "Tronton",
+      jenis_armada == 7 ~ "BU",
+      jenis_armada == 8 ~ "Cont 20",
+      jenis_armada == 9 ~ "Cont 40"
+    ))
     
-  armada_ke = temp$armada_ke %>% unique() %>% sort()
-  id_new    = 1:length(armada_ke)
-  df_refer  = data.frame(armada_ke,id_new)
-  
-  merge(temp,df_refer) %>% 
-    select(-armada_ke) %>% 
-    rename(armada_ke = id_new) %>% 
-    relocate(armada_ke,.before = jenis_armada) %>% 
-    arrange(jenis_armada,armada_ke) %>% 
-    knitr::kable(caption = tanggal)
+  temp %>% knitr::kable(caption = tanggal)
 }
 
 ```
@@ -270,38 +268,63 @@ printing = function(temp){
 
 ```{r,echo=FALSE}
 i    = 1
-temp = list_jadwal[[i]]
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
 printing(temp)
 
 i    = 2
-temp = list_jadwal[[i]]
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
 printing(temp)
 
 i    = 3
-temp = list_jadwal[[i]]
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
 printing(temp)
 
 i    = 4
-temp = list_jadwal[[i]]
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
 printing(temp)
 
 i    = 5
-temp = list_jadwal[[i]]
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
 printing(temp)
 
+i    = 6
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
+
+i    = 7
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
+
+i    = 8
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
+
+i    = 9
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
+
+i    = 10 
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
+
+i    = 11
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
+
+i    = 12
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
+
+i    = 13
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
+
+i    = 14
+temp = jadwal_tanggal_armada[[i]] %>% mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
+printing(temp)
 ```
 
 # ANALISA DAN DISKUSI
-
-## Keterbatasan Titik Pengiriman
-
-Jika kita perhatikan data detail jenis armada yang diberikan, terlihat bahwa __semua jenis armada__ memiliki keterbatasan:
-
-> __Hanya bisa mengantarkan order ke lima titik pengantaran saja__.
-
-Sedangkan _sales order_ (baik dalam kubikasi dan tonase) tidak pernah ada yang bernilai besar. Akibatnya keunggulan armada-armada besar justru tidak dapat diutilisasi dengan baik. Oleh karena itu __tidak ada alasan kita perlu menggunakan armada yang lebih besar dari CARRY dan CDE__. Pada model sekarang ini, saya batasi pengiriman menjadi Carry dan CDE saja. 
-
-Namun demikian, saat tidak ada pembatasan armada pengiriman, saya menemukan penggunaan armada besar tetap memberikan nilai _cost_ yang masih "kecil". Salah satu penyebabnya adalah besaran unit `cost per km` yang digunakan relatif kecil dan tidak terlalu berbeda antara satu dengan yang lain.
 
 ## Keoptimalan
 
