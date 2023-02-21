@@ -137,14 +137,14 @@ Sampai saat ini tidak ada _library_ khusus untuk SDOA karena algoritma ini bersi
 
 Pada kasus ini, algoritma dibuat dengan bahasa __R__ dengan bantuan `library(tidyverse)` (untuk keperluan _data wrangling_) dan `library(parallel)` (untuk keperluan _parallel processing_). Oleh karena itu, algoritma ditulis dengan memanfaatkan prinsip _parallel processing_.
 
-Algoritma ini dijalankan pada __Ubuntu OS__ dengan memanfaatkan 7 _cores_ _processor_.
+Algoritma ini dijalankan pada __Ubuntu OS__ dengan memanfaatkan 5 _cores_ _processor_.
 
 ## _Flowchart_ Pengerjaan SDOA
 
 Berikut ada _flowchart_ pengerjaan dan pembuatan model ini hingga mendapatkan solusi optimal.
 
 ```{r out.width="150%",echo=FALSE,fig.retina=10,fig.width=10}
-knitr::include_graphics("image.svg")
+knitr::include_graphics("Flowchart.png")
 ```
 
 
@@ -167,9 +167,8 @@ df_sales_order_ready %>%
 ## Data Informasi Detail Toko
 
 ```{r,echo=FALSE}
-load("dbase_toko.rda")
 df_cust_complete_ready %>% 
-  select(-X,-url,-lat,-long) %>% 
+  select(-lat,-long) %>% 
   DT::datatable(caption = "Data Informasi Detail ALamat Toko",filter = "bottom")
 ```
 
@@ -225,13 +224,13 @@ Fungsi objektif pada model ini adalah:
 ```{r,include=FALSE}
 rm(list=ls())
 
-load("ciawi done new 20.rda")
 load("dbase_toko.rda")
+load("ciawi done.rda")
 
 df_cust_complete_ready = df_cust_complete_ready %>% select(nama_toko,provinsi,kota_kab,kecamatan)
 
 # jangan lupa ganti tanggal
-tanggal_minimal = as.Date(as.character("2022-11-29"),
+tanggal_minimal = as.Date(as.character("2022-11-07"),
                           "%Y-%m-%d")
 
 # kita split berdasarkan tanggal kirim
