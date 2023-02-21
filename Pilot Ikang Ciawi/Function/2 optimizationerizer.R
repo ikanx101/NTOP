@@ -24,6 +24,9 @@ library(TSP)
 library(tictoc)
 library(parallel)
 
+# mulai menghitung runtime
+tic("Semua proses ini memakan waktu: ")
+# banyak cores
 numcore = 5
 # ==============================================================================
 
@@ -57,11 +60,10 @@ temporary = merge(df_order,df_toko)
 # kita kembalikan lagi
 df_toko  = temporary %>% select(colnames(df_toko))
 df_order = temporary %>% select(colnames(df_order))
-df_order$id = 1:nrow(df_order)
 
 # kita filtering terlebih dahulu
-df_toko   = df_toko %>% filter(supplied == target_gudang)
-df_order  = df_order %>% filter(nama_toko %in% df_toko$nama_toko)
+df_toko   = df_toko %>% filter(supplied == target_gudang) %>% distinct()
+df_order  = df_order %>% filter(nama_toko %in% df_toko$nama_toko) %>% distinct()
 df_gudang = df_gudang %>% filter(site == target_gudang) %>% .$week_day_hour
 
 # kita group split dulu per toko
@@ -127,7 +129,9 @@ for(ikanx in 1:n_toko){
   hasil_df_order_per_toko[[ikanx]] <- temp
   print(paste0("Toko ",ikanx," DONE"))
 }
+# ==============================================================================
 
+# ==============================================================================
 # nah dari hasil yang ada, kita akan buat optimisasinya lagi dengan menggabung 
 # yang "sedikit" ke yang "banyakan"
 # kita buat template dulu
@@ -136,7 +140,33 @@ hasil_df_order_per_toko_tuning = vector("list",n_toko)
 for(ikanx in 1:length(hasil_df_order_per_toko)){
   temp = hasil_df_order_per_toko[[ikanx]]
   hasil_df_order_per_toko_tuning[[ikanx]] = utak_atik_tanggal(temp)
-  cat(paste0(ikanx))
+  print(paste0("fine tuning jadwal toko ",ikanx))
+}
+# ==============================================================================
+
+# ==============================================================================
+# sudah selesai
+# kita kembalikan per tanggal kirim
+final_jadwal = do.call(rbind,hasil_df_order_per_toko_tuning) %>% group_split(tanggal_kirim)
+final_jadwal 
+# ==============================================================================
+
+# ==============================================================================
+# kita akan cari armada yang pantas di-assign per tanggal
+n_tanggal = length(final_jadwal)
+
+# buat template terlebih dahulu
+jadwal_tanggal_armada = vector("list",n_tanggal)
+
+# kita mulai pencarian per tanggalnya
+for(ikanx in 1:n_tanggal){
+  print(paste0("Mencari armada di tanggal ",ikanx))
+  source("0 SDOA untuk armada df tanggal.R")
+  # kita mulai
+  temp = final_jadwal[[ikanx]] %>% merge(df_toko)
+  jadwal_tanggal_armada[[ikanx]] = cari_armada_donk(temporary)
 }
 
-# sudah selesai
+save(jadwal_tanggal_armada,file = "~/NTOP/Pilot Ikang Ciawi/Dokumentasi/ciawi done.rda")
+
+toc()
