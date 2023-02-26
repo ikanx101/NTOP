@@ -13,7 +13,7 @@ tanggal_generate = function(dummy){
       }
       if(min[ix] != max[ix]){
         # kita paksakan selesai dalam waktu yang sesingkat-singkatnya
-        hasil[ix] = sample(c(min[ix]:(min[ix]+5)),1) 
+        hasil[ix] = sample(c(min[ix]:(min[ix]+4)),1) 
       }
     }
   }
@@ -33,7 +33,15 @@ obj_func = function(list){
   n_tanggal = max(n_tanggal,0)^2 * 10
   # dihukum jika lebih dari tanggal yang seharusnya
   punish    = sum(temp$marker) * 10000
-  return(n_tanggal + punish)
+  # kita akan hukum jika melebihi max capacity
+  punish_lagi = temp %>% 
+                group_by(tanggal_kirim) %>% 
+                summarise(ton   = sum(order_tonase),
+                          kubik = sum(order_kubikasi)) %>% 
+                ungroup() %>% 
+                mutate(marker_1 = ifelse(ton > 20000,100,0),
+                       marker_2 = ifelse(kubik > 45,100,0))
+  return(n_tanggal + punish + sum(punish_lagi$marker_1) + sum(punish_lagi$marker_2))
 }
 
 # kita buat lagi rotation matriksnya
