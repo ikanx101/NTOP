@@ -304,6 +304,6 @@ for(ikanx in 1:n_tanggal){
   
 }
 
-save(jadwal_tanggal_armada,file = "~/NTOP/Pilot Desember/Dokumentasi/ciawi done.rda")
+save(jadwal_tanggal_armada,file = "~/NTOP/Pilot Desember/Dokumentasi/ciawi done versi 3 hari dan jawa.rda")
 
 toc()

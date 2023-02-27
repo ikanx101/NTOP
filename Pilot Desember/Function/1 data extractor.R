@@ -6,6 +6,9 @@ library(tidyr)
 library(parallel)
 library(readxl)
 
+# perlu diperhatikan bahwa yang mau diambil adalah toko di pulau jawa aja
+load("filterus.rda")
+
 # ==============================================================================
 # set jumlah cores
 numcore = 5
@@ -18,9 +21,9 @@ file = list.files(path,pattern = "*csv",full.names = T)
 dfs = mclapply(file,read.csv,mc.cores = numcore)
 
 # kita tulis nama dataframe-nya
-df_sales_order = dfs[[1]]
+df_sales_order = dfs[[1]] %>% filter(nama_customer %in% toko_javanicus)
 df_armada      = dfs[[2]]
-df_cust_pos    = dfs[[3]]
+df_cust_pos    = dfs[[3]] %>% filter(customer %in% toko_javanicus)
 df_gudang      = dfs[[4]]
 df_kode_pos    = dfs[[5]]
 # ==============================================================================
@@ -213,3 +216,22 @@ save(df_cust_complete_ready,
      file = "~/NTOP/Pilot Desember/Dokumentasi/dbase_toko.rda")
 
 print("DONE")
+
+
+# beyonder
+# kita akan filter hanya di jawa sahaja
+# oleh karena itu ada skrip beyonder seperti ini
+
+toko_javanicus = 
+  df_cust_complete_ready %>% 
+  filter(grepl("jawa|banten|karta",provinsi,ignore.case = T)) %>% 
+  .$nama_toko
+
+save(toko_javanicus,file = "filterus.rda")
+
+
+
+
+
+
+

@@ -13,7 +13,8 @@ tanggal_generate = function(dummy){
       }
       if(min[ix] != max[ix]){
         # kita paksakan selesai dalam waktu yang sesingkat-singkatnya
-        hasil[ix] = sample(c(min[ix]:(min[ix]+4)),1) 
+        # hasil[ix] = sample(c(min[ix]:(min[ix]+4)),1) awal seperti ini
+        hasil[ix] = sample(c(min[ix]:(min[ix] + 3)),1) # kita modif dulu ya
       }
     }
   }
