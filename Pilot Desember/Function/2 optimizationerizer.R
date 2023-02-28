@@ -27,7 +27,7 @@ library(parallel)
 # mulai menghitung runtime
 tic("Semua proses ini memakan waktu: ")
 # banyak cores
-numcore = 5
+numcore = 6
 # ==============================================================================
 
 # ==============================================================================
@@ -91,7 +91,7 @@ for(ikanx in 1:n_toko){
     source("0 SDOA untuk tanggal df order.R")
     
     # kita generate calon solusinya terlebih dahulu
-    calon_solusi = mclapply(1:300,tanggal_generate,mc.cores = numcore)
+    calon_solusi = mclapply(1:10,tanggal_generate,mc.cores = numcore) # kalau mau akurat kita perbanyak calon solusi di sini
     
     # menghitung initial objective function
     f_hit = mcmapply(obj_func,calon_solusi,mc.cores = numcore)
@@ -158,6 +158,9 @@ n_tanggal = length(final_jadwal)
 # buat template terlebih dahulu
 jadwal_tanggal_armada = vector("list",n_tanggal)
 
+# di sini kita akan mulai enrich nama_toko dengan provinsi dan kota_kab
+
+
 # kita mulai pencarian per tanggalnya
 for(ikanx in 1:n_tanggal){
   print(paste0("Mencari armada di tanggal ",ikanx))
@@ -173,7 +176,7 @@ for(ikanx in 1:n_tanggal){
   # kita hitung dulu total order per toko
   order_total_per_toko = 
     temp %>% 
-    group_by(nama_toko) %>% 
+    group_by(provinsi,kota_kab) %>% 
     summarise(kubik      = sum(order_kubikasi),
               tonase     = sum(order_tonase),
               max_armada = mean(max_armada)) %>% 
