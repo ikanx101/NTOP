@@ -27,7 +27,7 @@ library(parallel)
 # mulai menghitung runtime
 tic("Semua proses ini memakan waktu: ")
 # banyak cores
-numcore = 4
+numcore = 6
 # ==============================================================================
 
 # ==============================================================================
@@ -91,7 +91,7 @@ for(ikanx in 1:n_toko){
     source("0 SDOA untuk tanggal df order.R")
     
     # n calon solusi yang hendak digenerate
-    n_calon_solution = 30 # kalau mau akurat kita perbanyak calon solusi di sini
+    n_calon_solution = 70 # kalau mau akurat kita perbanyak calon solusi di sini
     
     # kita generate calon solusinya terlebih dahulu
     calon_solusi = mclapply(1:n_calon_solution,tanggal_generate,mc.cores = numcore) 
@@ -100,7 +100,7 @@ for(ikanx in 1:n_toko){
     f_hit = mcmapply(obj_func,calon_solusi,mc.cores = numcore)
     
     # kita mulai perhitungannya di sini
-    for(iter in 1:10){
+    for(iter in 1:15){
       # kita cari dulu mana yang akan jadi pusat
       n_bhole = which.min(f_hit)
       
@@ -271,7 +271,7 @@ for(ikanx in 1:n_tanggal){
     
     # kita akan mulai SDOAnya di sini
     # generate solusi
-    n_calon_solution = 30
+    n_calon_solution = 70
     calon_solusi = vector("list",n_calon_solution) # ini kita set 10 dulu ya
     for(idy in 1:n_calon_solution){
       calon_solusi[[idy]] = cari_solusi_armada(idy)
@@ -284,7 +284,7 @@ for(ikanx in 1:n_tanggal){
     f_hit  = mcmapply(obj_func_new,calon_solusi,mc.cores = numcore)
     
     # kita mulai perhitungannya di sini
-    for(iter in 1:30){
+    for(iter in 1:20){
       # kita cari dulu mana yang akan jadi pusat
       n_bhole = which.min(f_hit)[1]
       
@@ -323,6 +323,6 @@ for(ikanx in 1:n_tanggal){
   
 }
 
-save(jadwal_tanggal_armada,file = "~/NTOP/Pilot Desember/Dokumentasi/ciawi done dengan tweak prov dan kota.rda")
+save(jadwal_tanggal_armada,file = "~/NTOP/Pilot Desember/Dokumentasi/ciawi done versi lama.rda")
 
 toc()

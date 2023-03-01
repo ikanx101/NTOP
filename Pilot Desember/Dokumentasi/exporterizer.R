@@ -8,7 +8,7 @@ library(openxlsx)
 
 # ambil data yang sudah dihasilkan oleh optimizationerizer
 load("dbase_toko.rda")
-load("ciawi done ver")
+load("ciawi done versi lama.rda")
 
 # hanya ambil data customer yang berguna
 df_cust_complete_ready = df_cust_complete_ready %>% 
