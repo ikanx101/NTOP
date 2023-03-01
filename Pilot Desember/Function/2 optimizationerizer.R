@@ -90,8 +90,11 @@ for(ikanx in 1:n_toko){
     # kita panggil function generate tanggal dan perhitungan objective function
     source("0 SDOA untuk tanggal df order.R")
     
+    # n calon solusi yang hendak digenerate
+    n_calon_solution = 30 # kalau mau akurat kita perbanyak calon solusi di sini
+    
     # kita generate calon solusinya terlebih dahulu
-    calon_solusi = mclapply(1:10,tanggal_generate,mc.cores = numcore) # kalau mau akurat kita perbanyak calon solusi di sini
+    calon_solusi = mclapply(1:n_calon_solution,tanggal_generate,mc.cores = numcore) 
     
     # menghitung initial objective function
     f_hit = mcmapply(obj_func,calon_solusi,mc.cores = numcore)
@@ -161,7 +164,8 @@ jadwal_tanggal_armada = vector("list",n_tanggal)
 # di sini kita akan mulai enrich nama_toko dengan provinsi dan kota_kab
 load("~/NTOP/Pilot Desember/Dokumentasi/dbase_toko.rda")
 # kita hanya akan pilih yang tertentu saja
-df_referensi = df_cust_complete_ready %>% select(nama_toko,provinsi,kota_kab)
+df_referensi = df_cust_complete_ready %>% select(nama_toko,provinsi,kota_kab) %>% 
+               distinct()
 # nanti si df_referensi ini akan dijadikan basis utk pengelompokan
 
 
@@ -170,20 +174,27 @@ for(ikanx in 1:n_tanggal){
   print(paste0("Mencari armada di tanggal ",ikanx))
   source("0 SDOA untuk armada df tanggal.R")
   # kita mulai
-  temp = final_jadwal[[ikanx]] %>% merge(df_toko)
+  temp = final_jadwal[[ikanx]] %>% merge(df_toko,all.x = T) %>% 
+         merge(df_referensi,all.x = T)
   
   # ============================================================================
   # ============================================================================
   # sekarang kita akan hitung
+  # ini kalau basisnya toko
   n_toko_delivery         = length(unique(temp$nama_toko))
+  # ini kalau basisnya provinsi dan kota/kab
+  # n_toko_delivery         = length(unique(paste(temp$provinsi,
+  #                                               temp$kota_kab)
+  #                                        ))
+  
   
   # kita hitung dulu total order per toko
   order_total_per_toko = 
     temp %>% 
-    group_by(provinsi,kota_kab) %>% 
+    group_by(nama_toko) %>% 
     summarise(kubik      = sum(order_kubikasi),
               tonase     = sum(order_tonase),
-              max_armada = mean(max_armada)) %>% 
+              max_armada = max(max_armada)) %>% 
     ungroup() %>% 
     mutate(armada_terpilih = 0)
   
@@ -260,8 +271,9 @@ for(ikanx in 1:n_tanggal){
     
     # kita akan mulai SDOAnya di sini
     # generate solusi
-    calon_solusi = vector("list",100)
-    for(idy in 1:100){
+    n_calon_solution = 30
+    calon_solusi = vector("list",n_calon_solution) # ini kita set 10 dulu ya
+    for(idy in 1:n_calon_solution){
       calon_solusi[[idy]] = cari_solusi_armada(idy)
     }
     
@@ -280,7 +292,7 @@ for(ikanx in 1:n_tanggal){
       center_1         = calon_solusi[[n_bhole]]
       
       calon_solusi_new = mcmapply(ro_kon,calon_solusi,mc.cores = numcore)
-      calon_solusi_new = lapply(1:100, function(i) calon_solusi_new[,i])
+      calon_solusi_new = lapply(1:n_calon_solution, function(i) calon_solusi_new[,i])
       
       calon_solusi = calon_solusi_new
       

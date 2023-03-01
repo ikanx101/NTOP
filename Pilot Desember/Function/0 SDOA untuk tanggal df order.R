@@ -40,8 +40,8 @@ obj_func = function(list){
                 summarise(ton   = sum(order_tonase),
                           kubik = sum(order_kubikasi)) %>% 
                 ungroup() %>% 
-                mutate(marker_1 = ifelse(ton > 20000,100,0),
-                       marker_2 = ifelse(kubik > 45,100,0))
+                mutate(marker_1 = ifelse(ton   > 40000,100,0),
+                       marker_2 = ifelse(kubik > 65,100,0))
   return(n_tanggal + punish + sum(punish_lagi$marker_1) + sum(punish_lagi$marker_2))
 }
 
@@ -102,8 +102,8 @@ utak_atik_tanggal = function(temp){
       # kita buat marker dulu
       temp_4 = 
         temp_3 %>% 
-        mutate(marker_1 = ton <= 20000,
-               marker_2 = kubik <= 45) %>% 
+        mutate(marker_1 = ton   <= 40000,
+               marker_2 = kubik <= 65) %>% 
         mutate(marker_3 = marker_1 + marker_2)
       # seandainya true semua, berarti genap kan
       marker_final = sum(temp_4$marker_3) %% 2
