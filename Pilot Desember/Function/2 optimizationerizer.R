@@ -161,12 +161,8 @@ jadwal_tanggal_armada = vector("list",n_tanggal)
 # di sini kita akan mulai enrich nama_toko dengan provinsi dan kota_kab
 load("~/NTOP/Pilot Desember/Dokumentasi/dbase_toko.rda")
 # kita hanya akan pilih yang tertentu saja
-
-
-
-
-
-
+df_referensi = df_cust_complete_ready %>% select(nama_toko,provinsi,kota_kab)
+# nanti si df_referensi ini akan dijadikan basis utk pengelompokan
 
 
 # kita mulai pencarian per tanggalnya
