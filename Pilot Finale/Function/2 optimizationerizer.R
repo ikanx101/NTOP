@@ -114,12 +114,12 @@ for(ikanx in 1:n_toko){
   marker_sdoa = nrow(temp)
   # baru kita hitung
   if(marker_sdoa > 1){
-    print(paste0("mulai mencari tanggal pengiriman untuk toko ",ikanx))
+    print(paste0("mulai mencari tanggal pengiriman untuk AREA ",ikanx))
     # kita panggil function generate tanggal dan perhitungan objective function
     source("0 SDOA untuk tanggal df order.R")
     
     # n calon solusi yang hendak digenerate
-    n_calon_solution = 30 # kalau mau akurat kita perbanyak calon solusi di sini
+    n_calon_solution = 70 # kalau mau akurat kita perbanyak calon solusi di sini
     
     # kita generate calon solusinya terlebih dahulu
     calon_solusi = mclapply(1:n_calon_solution,tanggal_generate,mc.cores = numcore) 
@@ -128,7 +128,7 @@ for(ikanx in 1:n_toko){
     f_hit = mcmapply(obj_func,calon_solusi,mc.cores = numcore)
     
     # kita mulai perhitungannya di sini
-    for(iter in 1:10){
+    for(iter in 1:15){
       # kita cari dulu mana yang akan jadi pusat
       n_bhole = which.min(f_hit)
       
@@ -158,7 +158,7 @@ for(ikanx in 1:n_toko){
   }
   # kita balikin lagi ke data awal
   hasil_df_order_per_toko[[ikanx]] <- temp
-  print(paste0("Toko ",ikanx," DONE"))
+  print(paste0("AREA ",ikanx," DONE"))
 }
 # ==============================================================================
 
@@ -171,7 +171,7 @@ hasil_df_order_per_toko_tuning = vector("list",n_toko)
 for(ikanx in 1:length(hasil_df_order_per_toko)){
   temp = hasil_df_order_per_toko[[ikanx]]
   hasil_df_order_per_toko_tuning[[ikanx]] = utak_atik_tanggal(temp)
-  print(paste0("fine tuning jadwal toko ",ikanx))
+  print(paste0("fine tuning jadwal area ",ikanx))
 }
 # ==============================================================================
 
