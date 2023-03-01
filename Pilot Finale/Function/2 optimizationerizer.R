@@ -182,6 +182,10 @@ final_jadwal = do.call(rbind,hasil_df_order_per_toko_tuning) %>% group_split(tan
 final_jadwal 
 # ==============================================================================
 
+
+
+
+
 # ==============================================================================
 # kita akan cari armada yang pantas di-assign per tanggal
 n_tanggal = length(final_jadwal)
