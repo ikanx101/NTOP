@@ -1,6 +1,6 @@
 rm(list=ls())
 
-setwd("~/NTOP/Pilot Desember/Dokumentasi")
+setwd("~/NTOP/Pilot Finale/Dokumentasi")
 
 library(dplyr)
 library(expss)
@@ -8,11 +8,11 @@ library(openxlsx)
 
 # ambil data yang sudah dihasilkan oleh optimizationerizer
 load("dbase_toko.rda")
-load("ciawi done ver")
+load("ciawi done dengan tweak prov dan kota.rda")
 
 # hanya ambil data customer yang berguna
 df_cust_complete_ready = df_cust_complete_ready %>% 
-                         select(nama_toko,provinsi,kota_kab,kecamatan)
+                         select(nama_toko,kecamatan)
 
 # jangan lupa ganti tanggal
 # sesuai dengan tanggal awal
@@ -35,7 +35,7 @@ for(ikanx in 1:n_tanggal_kirim){
     mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
   
   # sekarang kita mulai
-  tanggal = paste0("TglKrm ",temp$tanggal_kirim[1])
+  tanggal = paste(temp$tanggal_kirim[1],temp$provinsi[1])
   
   temp = 
     temp %>% 
@@ -71,4 +71,4 @@ for(ikanx in 1:n_tanggal_kirim){
 }
 
 # export ke Excel
-saveWorkbook(wb, "hasil optimasi jawa.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "hasil optimasi jawa tweak prov kota.xlsx", overwrite = TRUE)
