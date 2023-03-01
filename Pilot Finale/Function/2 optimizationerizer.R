@@ -175,11 +175,14 @@ for(ikanx in 1:length(hasil_df_order_per_toko)){
 }
 # ==============================================================================
 
+
 # ==============================================================================
 # sudah selesai
 # kita kembalikan per tanggal kirim
-final_jadwal = do.call(rbind,hasil_df_order_per_toko_tuning) %>% group_split(tanggal_kirim)
-final_jadwal 
+# kita coba akan kelompokkan per provinsi dan tanggal kirim
+final_jadwal = do.call(rbind,hasil_df_order_per_toko_tuning) %>% 
+               group_split(tanggal_kirim,provinsi)
+final_jadwal
 # ==============================================================================
 
 
@@ -198,7 +201,7 @@ jadwal_tanggal_armada = vector("list",n_tanggal)
 
 # kita mulai pencarian per tanggalnya
 for(ikanx in 1:n_tanggal){
-  print(paste0("Mencari armada di tanggal ",ikanx))
+  print(paste0("Proses Pencarian Armada Pada Tanggal ",ikanx))
   source("0 SDOA untuk armada df tanggal.R")
   # kita mulai
   temp = final_jadwal[[ikanx]] %>% merge(df_toko,all.x = T) %>% 
@@ -243,6 +246,7 @@ for(ikanx in 1:n_tanggal){
       .$armada %>% 
       as.numeric()
     # kita assign dulu
+    if(identical(armada_terpilih, numeric(0))){armada_terpilih = NA}
     order_total_per_toko$armada_terpilih[ix] = armada_terpilih
   }
   
