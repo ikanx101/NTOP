@@ -99,8 +99,16 @@ utak_atik_tanggal = function(temp){
                   kubik = sum(order_kubikasi)) %>% 
         ungroup()
       
+      # kita buat marker dulu
+      temp_4 = 
+        temp_3 %>% 
+        mutate(marker_1 = ton <= 20000,
+               marker_2 = kubik <= 45) %>% 
+        mutate(marker_3 = marker_1 + marker_2)
+      # seandainya true semua, berarti genap kan
+      marker_final = sum(temp_4$marker_3) %% 2
       # kita kembalikan jika melebihi kapasitas
-      if(temp_3$ton <= 20000 & temp_3$kubik <= 45){temp = temp_2}
+      if(marker_final == 0){temp = temp_2}
       # print dulu
       print("utak atik dulu")
     }

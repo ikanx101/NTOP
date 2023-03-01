@@ -27,7 +27,7 @@ library(parallel)
 # mulai menghitung runtime
 tic("Semua proses ini memakan waktu: ")
 # banyak cores
-numcore = 6
+numcore = 4
 # ==============================================================================
 
 # ==============================================================================
@@ -159,6 +159,14 @@ n_tanggal = length(final_jadwal)
 jadwal_tanggal_armada = vector("list",n_tanggal)
 
 # di sini kita akan mulai enrich nama_toko dengan provinsi dan kota_kab
+load("~/NTOP/Pilot Desember/Dokumentasi/dbase_toko.rda")
+# kita hanya akan pilih yang tertentu saja
+
+
+
+
+
+
 
 
 # kita mulai pencarian per tanggalnya
@@ -307,6 +315,6 @@ for(ikanx in 1:n_tanggal){
   
 }
 
-save(jadwal_tanggal_armada,file = "~/NTOP/Pilot Desember/Dokumentasi/ciawi done versi 3 hari dan jawa.rda")
+save(jadwal_tanggal_armada,file = "~/NTOP/Pilot Desember/Dokumentasi/ciawi done dengan tweak prov dan kota.rda")
 
 toc()
