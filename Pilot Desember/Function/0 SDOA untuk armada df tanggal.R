@@ -57,7 +57,7 @@ obj_func_new = function(list){
   
   # kita mulai
   n_iterasi    = length(df_temp)
-  # constraint pertama: jika lebih dari 5 maka hukum
+  # constraint pertama: jika lebih dari 6 maka hukum
   constraint_1 = rep(0,n_iterasi)
   # constraint kedua: jika lebih dari tonase maka hukum
   constraint_2 = rep(0,n_iterasi)
@@ -69,7 +69,7 @@ obj_func_new = function(list){
     # ambil lagi
     temp_lagi        = df_temp[[ix]]
     # constraint pertama
-    constraint_1[ix] = ifelse(nrow(temp_lagi) > 5,1000,0)
+    constraint_1[ix] = ifelse(nrow(temp_lagi) > 6,1000,0)
     # constraint kedua
     tes_1 = df_jenis_armada %>% filter(armada == temp_lagi$armada_terpilih[1]) %>% .$max_cap_tonase
     constraint_2[ix] = ifelse(sum(temp_lagi$tonase) <= tes_1,100,0)

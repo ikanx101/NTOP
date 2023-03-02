@@ -8,7 +8,7 @@ library(openxlsx)
 
 # ambil data yang sudah dihasilkan oleh optimizationerizer
 load("dbase_toko.rda")
-load("ciawi done dengan tweak prov dan kota.rda")
+load("ciawi done dengan tweak prov dan kota v3.rda")
 
 # hanya ambil data customer yang berguna
 df_cust_complete_ready = df_cust_complete_ready %>% 
@@ -82,4 +82,4 @@ tabel_all = exporter
 xl_write(tabel_all, wb, sh)
 
 # export ke Excel
-saveWorkbook(wb, "hasil optimasi jawa tweak prov kota v2.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "hasil optimasi jawa tweak prov kota v3.xlsx", overwrite = TRUE)

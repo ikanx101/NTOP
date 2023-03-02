@@ -119,7 +119,7 @@ for(ikanx in 1:n_toko){
     source("0 SDOA untuk tanggal df order.R")
     
     # n calon solusi yang hendak digenerate
-    n_calon_solution = 60 # kalau mau akurat kita perbanyak calon solusi di sini
+    n_calon_solution = 80 # kalau mau akurat kita perbanyak calon solusi di sini
     
     # kita generate calon solusinya terlebih dahulu
     calon_solusi = mclapply(1:n_calon_solution,tanggal_generate,mc.cores = numcore) 
@@ -250,6 +250,8 @@ for(ikanx in 1:n_tanggal){
     order_total_per_toko$armada_terpilih[ix] = armada_terpilih
   }
   
+  print("Optimisasi armada yang ada di toko-toko tersebut")
+  
   # kita akan cek apakah semuanya diassign armada yang berbeda-beda
   # marker pertama adalah jika setiap baris punya armada terpilih beda2
   marker_1 = length(unique(order_total_per_toko$armada_terpilih)) == nrow(order_total_per_toko)
@@ -267,7 +269,7 @@ for(ikanx in 1:n_tanggal){
       group_by(armada_terpilih) %>% 
       tally() %>% 
       ungroup() %>% 
-      mutate(berapa = ceiling(n/4)) %>% 
+      mutate(berapa = ceiling(n/5)) %>% 
       select(armada_terpilih,berapa)
     
     # kita balikin ke data awalnya
