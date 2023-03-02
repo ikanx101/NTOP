@@ -69,7 +69,7 @@ obj_func_new = function(list){
     # ambil lagi
     temp_lagi        = df_temp[[ix]]
     # constraint pertama
-    constraint_1[ix] = ifelse(nrow(temp_lagi) > 6,1000,0)
+    constraint_1[ix] = ifelse(nrow(temp_lagi) > 5,1000,0)
     # constraint kedua
     tes_1 = df_jenis_armada %>% filter(armada == temp_lagi$armada_terpilih[1]) %>% .$max_cap_tonase
     constraint_2[ix] = ifelse(sum(temp_lagi$tonase) <= tes_1,100,0)

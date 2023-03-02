@@ -269,7 +269,7 @@ for(ikanx in 1:n_tanggal){
       group_by(armada_terpilih) %>% 
       tally() %>% 
       ungroup() %>% 
-      mutate(berapa = ceiling(n/5)) %>% 
+      mutate(berapa = ceiling(n/4)) %>% 
       select(armada_terpilih,berapa)
     
     # kita balikin ke data awalnya
@@ -304,7 +304,7 @@ for(ikanx in 1:n_tanggal){
     
     # kita akan mulai SDOAnya di sini
     # generate solusi
-    n_calon_solution = 36
+    n_calon_solution = 42
     calon_solusi = vector("list",n_calon_solution) # ini kita set 10 dulu ya
     for(idy in 1:n_calon_solution){
       calon_solusi[[idy]] = cari_solusi_armada(idy)

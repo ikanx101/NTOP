@@ -1,5 +1,7 @@
 rm(list=ls())
 
+setwd("~/NTOP/Pilot Finale/Function")
+
 # libraries
 library(dplyr)
 library(tidyr)
