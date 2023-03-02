@@ -14,7 +14,7 @@ load("filterus.rda")
 numcore = 5
 
 # folder data
-path = "~/NTOP/Pilot Desember/Data Mentah"
+path = "~/NTOP/Pilot Finale/Data Mentah"
 file = list.files(path,pattern = "*csv",full.names = T)
 
 # kita ambil semua file yang ada
@@ -190,7 +190,7 @@ df_toko            = merge(df_toko,df_toko_armada,all.x = T) %>%
                      mutate(max_armada = ifelse(is.na(max_armada),7,max_armada))
 
 save(df_jenis_armada,df_toko,df_order,df_gudang,
-     file = "~/NTOP/Pilot Desember/Dokumentasi/modelling.rda")
+     file = "~/NTOP/Pilot Finale/Dokumentasi/modelling.rda")
 # ==============================================================================
 
 # ==============================================================================
@@ -206,14 +206,14 @@ save(df_sales_order,
      df_cust_complete,
      df_cust_uncomplete,
      df_cust_complete_ready,
-     file = "~/NTOP/Pilot Desember/Dokumentasi/dokumentasi.rda")
+     file = "~/NTOP/Pilot Finale/Dokumentasi/dokumentasi.rda")
 
 df_cust_pos            = df_cust_pos %>% rename(nama_toko = customer)
 df_kode_pos            = df_kode_pos %>% select(kode_pos,provinsi,kota_kab,kecamatan)
 df_cust_complete_ready = merge(df_cust_complete_ready,df_cust_pos) %>% merge(df_kode_pos)
 
 save(df_cust_complete_ready,
-     file = "~/NTOP/Pilot Desember/Dokumentasi/dbase_toko.rda")
+     file = "~/NTOP/Pilot Finale/Dokumentasi/dbase_toko.rda")
 
 print("DONE")
 
