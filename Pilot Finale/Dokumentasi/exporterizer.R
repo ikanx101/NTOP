@@ -28,19 +28,25 @@ ikanx = 1
 # berapa banyak tanggal pengiriman
 n_tanggal_kirim = length(jadwal_tanggal_armada)
 
+# kita buat rumahnya dulu
+exporter        = vector("list")
+iter            = 1
+
+
+# kita mulai export-nya
 for(ikanx in 1:n_tanggal_kirim){
   # ==============================================================================
   # kita mulai deduksinya dari sini
   temp = jadwal_tanggal_armada[[ikanx]] %>% 
     mutate(tanggal_kirim = tanggal_kirim + tanggal_minimal - 1)
   
-  # sekarang kita mulai
-  tanggal = paste(temp$tanggal_kirim[1],temp$provinsi[1])
-  
+  # kita perbaiki dulu formatnya
   temp = 
     temp %>% 
     merge(df_cust_complete_ready) %>% 
-    select(sales_order,nama_toko,provinsi,kota_kab,kecamatan,
+    select(tanggal_kirim,
+           sales_order,nama_toko,
+           provinsi,kota_kab,kecamatan,
            armada_terpilih,armada_ke,
            order_kubikasi,
            order_tonase) %>% 
@@ -59,16 +65,21 @@ for(ikanx in 1:n_tanggal_kirim){
     )) %>%
     group_split(jenis_armada,armada_ke)
   
-  # bikin sheet
-  nama_sheet = paste0(tanggal)
-  sh = addWorksheet(wb, nama_sheet)
+  # kita kembalikan ke list exporter
+  exporter[[iter]] = temp
   
-  # isi tabelnya
-  tabel_all = temp
-  
-  # masukin semua tabel ke sheet tersebut
-  xl_write(tabel_all, wb, sh)
+  iter             = iter + 1
 }
 
+# bikin sheet
+nama_sheet = "Jadwal All"
+sh = addWorksheet(wb, nama_sheet)
+
+# isi tabelnya
+tabel_all = exporter
+
+# masukin semua tabel ke sheet tersebut
+xl_write(tabel_all, wb, sh)
+
 # export ke Excel
-saveWorkbook(wb, "hasil optimasi jawa tweak prov kota.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "hasil optimasi jawa tweak prov kota v2.xlsx", overwrite = TRUE)

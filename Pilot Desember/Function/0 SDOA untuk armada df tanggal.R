@@ -4,10 +4,11 @@
 buat_matriks_jarak = function(df){
   n_toko = nrow(df)
   # kita tambahin untuk long lat CIAWI
-  df[n_toko+1,] = list(NA)
+  # df[n_toko+1,] = list(NA) -->>> kita take out dulu sementara
   n_toko = nrow(df)
-  df$long[n_toko] = -6.649061
-  df$lat[n_toko]  = 106.8408808
+  # df$long[n_toko] = -6.649061
+  # df$lat[n_toko]  = 106.8408808
+  
   # buat rumahnya terlebih dahulu
   dist_mat = matrix(0,n_toko,n_toko)
   # kita buat euclidean distance terlebih dahulu
