@@ -23,7 +23,7 @@ library(parallel)
 # mulai menghitung runtime
 tic("Semua proses ini memakan waktu: ")
 # banyak cores
-numcore = 6
+numcore = 4
 # ==============================================================================
 
 
@@ -119,7 +119,7 @@ for(ikanx in 1:n_toko){
     source("0 SDOA untuk tanggal df order.R")
     
     # n calon solusi yang hendak digenerate
-    n_calon_solution = 90 # kalau mau akurat kita perbanyak calon solusi di sini
+    n_calon_solution = numcore * 14 # kalau mau akurat kita perbanyak calon solusi di sini
     
     # kita generate calon solusinya terlebih dahulu
     calon_solusi = mclapply(1:n_calon_solution,tanggal_generate,mc.cores = numcore) 
@@ -235,7 +235,7 @@ for(ikanx in 1:n_tanggal){
   marker_provinsi = temp$provinsi %>% unique()
   
   if(!grepl("jakarta|bogor|banten|barat",marker_provinsi,ignore.case = T)){
-    summary_armada = summary_armada %>% filter(armada >= 4)
+    summary_armada = summary_armada %>% filter(armada >= 3)
   }
   
   # kita akan hitung per baris nama_toko
@@ -311,7 +311,7 @@ for(ikanx in 1:n_tanggal){
     
     # kita akan mulai SDOAnya di sini
     # generate solusi
-    n_calon_solution = 54
+    n_calon_solution = numcore * 14
     calon_solusi = vector("list",n_calon_solution) # ini kita set 10 dulu ya
     for(idy in 1:n_calon_solution){
       calon_solusi[[idy]] = cari_solusi_armada(idy)
@@ -324,7 +324,7 @@ for(ikanx in 1:n_tanggal){
     f_hit  = mcmapply(obj_func_new,calon_solusi,mc.cores = numcore)
     
     # kita mulai perhitungannya di sini
-    for(iter in 1:30){
+    for(iter in 1:20){
       # kita cari dulu mana yang akan jadi pusat
       n_bhole = which.min(f_hit)[1]
       
