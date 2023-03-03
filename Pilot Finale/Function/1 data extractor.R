@@ -13,9 +13,9 @@ load("filterus.rda")
 
 # penentuan dia itu masuk ke distributor atau outlet
 # maunya apa?
-tipe_jadwal    = "Distributor"
+# tipe_jadwal    = "Distributor"
 # atau
-# tipe_jadwal    = "Outlet"
+tipe_jadwal    = "Outlet"
 
 path_raw       = "~/NTOP/Persiapan/Raw Data/Routing Explore.xlsx"
 df_dist_outlet = read_excel(path_raw,sheet = "Data Train",skip = 1) %>% 

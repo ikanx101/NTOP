@@ -234,7 +234,7 @@ for(ikanx in 1:n_tanggal){
   # jika temp bukan berasal dari jabodetabek, maka harus cdd long
   marker_provinsi = temp$provinsi %>% unique()
   
-  if(!grepl("jakarta|bogor|banten",marker_provinsi,ignore.case = T)){
+  if(!grepl("jakarta|bogor|banten|barat",marker_provinsi,ignore.case = T)){
     summary_armada = summary_armada %>% filter(armada >= 4)
   }
   
