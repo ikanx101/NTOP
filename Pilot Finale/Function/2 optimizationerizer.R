@@ -119,7 +119,7 @@ for(ikanx in 1:n_toko){
     source("0 SDOA untuk tanggal df order.R")
     
     # n calon solusi yang hendak digenerate
-    n_calon_solution = 80 # kalau mau akurat kita perbanyak calon solusi di sini
+    n_calon_solution = 90 # kalau mau akurat kita perbanyak calon solusi di sini
     
     # kita generate calon solusinya terlebih dahulu
     calon_solusi = mclapply(1:n_calon_solution,tanggal_generate,mc.cores = numcore) 
@@ -231,6 +231,13 @@ for(ikanx in 1:n_tanggal){
   # buat summary per armada
   summary_armada = df_jenis_armada %>% select(armada,max_cap_kubikasi,max_cap_tonase)
   
+  # jika temp bukan berasal dari jabodetabek, maka harus cdd long
+  marker_provinsi = temp$provinsi %>% unique()
+  
+  if(!grepl("jakarta|bogor|banten",marker_provinsi,ignore.case = T)){
+    summary_armada = summary_armada %>% filter(armada >= 4)
+  }
+  
   # kita akan hitung per baris nama_toko
   for(ix in 1:n_toko_delivery){
     # kita proses untuk toko tersebut
@@ -304,7 +311,7 @@ for(ikanx in 1:n_tanggal){
     
     # kita akan mulai SDOAnya di sini
     # generate solusi
-    n_calon_solution = 42
+    n_calon_solution = 54
     calon_solusi = vector("list",n_calon_solution) # ini kita set 10 dulu ya
     for(idy in 1:n_calon_solution){
       calon_solusi[[idy]] = cari_solusi_armada(idy)

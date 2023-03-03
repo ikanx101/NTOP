@@ -11,6 +11,21 @@ library(readxl)
 # perlu diperhatikan bahwa yang mau diambil adalah toko di pulau jawa aja
 load("filterus.rda")
 
+# penentuan dia itu masuk ke distributor atau outlet
+# maunya apa?
+# tipe_jadwal    = "Distributor"
+# atau
+tipe_jadwal    = "Outlet"
+
+path_raw       = "~/NTOP/Persiapan/Raw Data/Routing Explore.xlsx"
+df_dist_outlet = read_excel(path_raw,sheet = "Data Train",skip = 1) %>% 
+                 janitor::clean_names() %>% 
+                 select(nama_customer,tipe) %>% 
+                 distinct() %>% 
+                 filter(tipe == tipe_jadwal) %>% 
+                 .$nama_customer
+
+
 # ==============================================================================
 # set jumlah cores
 numcore = 5
@@ -23,9 +38,11 @@ file = list.files(path,pattern = "*csv",full.names = T)
 dfs = mclapply(file,read.csv,mc.cores = numcore)
 
 # kita tulis nama dataframe-nya
-df_sales_order = dfs[[1]] %>% filter(nama_customer %in% toko_javanicus)
+df_sales_order = dfs[[1]] %>% filter(nama_customer %in% toko_javanicus) %>% 
+                              filter(nama_customer %in% df_dist_outlet)
 df_armada      = dfs[[2]]
-df_cust_pos    = dfs[[3]] %>% filter(customer %in% toko_javanicus)
+df_cust_pos    = dfs[[3]] %>% filter(customer %in% toko_javanicus) %>% 
+                              filter(customer %in% df_dist_outlet)
 df_gudang      = dfs[[4]]
 df_kode_pos    = dfs[[5]]
 # ==============================================================================
@@ -226,7 +243,7 @@ print("DONE")
 
 toko_javanicus = 
   df_cust_complete_ready %>% 
-  filter(grepl("jawa|banten|karta",provinsi,ignore.case = T)) %>% 
+  filter(grepl("jawa|banten|karta|bogor",provinsi,ignore.case = T)) %>% 
   .$nama_toko
 
 save(toko_javanicus,file = "filterus.rda")
