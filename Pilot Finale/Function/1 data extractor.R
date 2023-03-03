@@ -22,7 +22,7 @@ df_dist_outlet = read_excel(path_raw,sheet = "Data Train",skip = 1) %>%
                  janitor::clean_names() %>% 
                  select(nama_customer,tipe) %>% 
                  distinct() %>% 
-                 filter(tipe == tipe_jadwal) %>% 
+                 filter(grepl(tipe_jadwal,tipe,ignore.case = T)) %>% 
                  .$nama_customer
 
 
