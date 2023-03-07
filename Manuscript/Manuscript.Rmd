@@ -78,7 +78,7 @@ df %>%
   knitr::kable(caption = "Sample Portfolio Data")
 ```
 
-Each portfolio contains 100 product candidates. Blibli.com has the following problem: choosing the right product from the portfolio to generate the maximal revenue with a budget limit of 5 million rupiahs.
+Each portfolio contains 100 product candidates. The marketplace has the following problem: choosing the right product from the portfolio to generate the maximal revenue with a budget limit of 5 million rupiahs.
 
 The problem can be written as follows:
 
